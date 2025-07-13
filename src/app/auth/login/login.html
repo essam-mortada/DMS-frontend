@@ -1,0 +1,37 @@
+<div class="form-container">
+  <h2>Login</h2>
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="email"
+      placeholder="Email"
+      required
+      #emailInput="ngModel"
+    />
+    <div *ngIf="emailInput.invalid && emailInput.touched" class="error">
+      Valid email is required.
+    </div>
+
+    <input
+      type="password"
+      name="password"
+      [(ngModel)]="password"
+      placeholder="Password"
+      required
+      minlength="6"
+      #passwordInput="ngModel"
+    />
+    <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error">
+      Password must be at least 6 characters.
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid">Login</button>
+  </form>
+
+  <div *ngIf="backendError" class="error">
+    {{ backendError }}
+  </div>
+
+  <a routerLink="/register">Don't have an account? Register</a>
+</div>

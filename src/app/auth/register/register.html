@@ -1,0 +1,33 @@
+<div class="form-container">
+  <h2>Register</h2>
+  <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
+    <input name="firstName" [(ngModel)]="firstName" placeholder="First Name" required #fn="ngModel" />
+    <div *ngIf="fn.invalid && fn.touched" class="error">First name is required.</div>
+
+    <input name="lastName" [(ngModel)]="lastName" placeholder="Last Name" required #ln="ngModel" />
+    <div *ngIf="ln.invalid && ln.touched" class="error">Last name is required.</div>
+
+    <input name="nationalId" type="number" [(ngModel)]="nationalId" placeholder="National ID" required #nid="ngModel" />
+    <div *ngIf="nid.invalid && nid.touched" class="error">National ID is required.</div>
+
+    <input type="email" name="email" [(ngModel)]="email" placeholder="Email" required #em="ngModel" />
+    <div *ngIf="em.invalid && em.touched" class="error">Valid email is required.</div>
+
+    <input
+      type="password"
+      name="password"
+      [(ngModel)]="password"
+      placeholder="Password"
+      required
+      minlength="6"
+      #pw="ngModel"
+    />
+    <div *ngIf="pw.invalid && pw.touched" class="error">Password must be at least 6 characters.</div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Register</button>
+  </form>
+
+  <div *ngIf="backendError" class="error">{{ backendError }}</div>
+
+  <a routerLink="/login">Already have an account? Login</a>
+</div>
