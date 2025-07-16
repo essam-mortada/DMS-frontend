@@ -1,0 +1,34 @@
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <i class="fas fa-folder"></i>
+            <h1>DocuManager</h1>
+        </div>
+        <div class="header-actions">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search documents..." id="searchInput">
+            </div>
+           <div class="dropdown" [class.show]="isDropdownOpen">
+  <!-- Combined icon and dropdown toggle -->
+  <button class="btn btn-link text-dark dropdown-toggle d-flex align-items-center"
+          type="button"
+          (click)="toggleDropdown()"
+          id="userDropdown"
+          aria-expanded="false">
+    <i class="fa-solid fa-user me-2"></i>
+  </button>
+
+  <!-- Dropdown menu -->
+  <div class="dropdown-menu dropdown-menu-end"
+       [class.show]="isDropdownOpen"
+       aria-labelledby="userDropdown">
+   
+    <button class="dropdown-item" (click)="logout()">
+      <i class="fas fa-sign-out-alt me-2"></i> Logout
+    </button>
+  </div>
+</div>
+        </div>
+    </div>
+</header>
