@@ -1,0 +1,107 @@
+<app-header></app-header>
+<button class="btn btn-primary mb-3" (click)="openCreateModal()">
+  <i class="fa fa-plus me-2"></i> Create Folder
+</button>
+
+
+<div class="container mt-3">
+  @if (loading) {
+  <div class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  } @else {
+  <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+    @for (folder of folders; track folder.id) {
+    <div class="col">
+      <div class="card folder-card h-100 position-relative">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <a
+              [routerLink]="['/workspaces', workspaceId, 'folders', folder.id]"
+              class="text-decoration-none"
+            >
+              <i class="fa fa-folder text-warning fs-3"></i>
+              <h5 class="card-title mt-2">{{ folder.name }}</h5>
+            </a>
+
+            <div
+              class="dropdown"
+              [class.show]="openDropdownId === folder.id"
+              (document:click)="closeDropdown()"
+            >
+              <button
+                class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                type="button"
+                (click)="toggleDropdown(folder.id); $event.stopPropagation()"
+                [attr.aria-expanded]="openDropdownId === folder.id"
+              >
+                <i class="fa fa-ellipsis-v"></i>
+              </button>
+              <ul
+                class="dropdown-menu"
+                [class.show]="openDropdownId === folder.id"
+                style="position: absolute; right: 0; left: auto"
+              >
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    (click)="
+                      openEditModal(folder);
+                      $event.preventDefault();
+                      $event.stopPropagation()
+                    "
+                  >
+                    <i class="fa fa-edit me-2"></i> Edit
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    (click)="
+                      deleteFolder(folder.id);
+                      $event.preventDefault();
+                      $event.stopPropagation()
+                    "
+                  >
+                    <i class="fa fa-trash me-2"></i> Delete
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    } @empty {
+    <div class="col-12">
+      <div class="alert alert-info">No folders found</div>
+    </div>
+    }
+  </div>
+  }
+</div>
+<app-folder-create-modal
+  [showModal]="showCreateModal"
+  (closeModal)="closeModals()"
+  (submitForm)="onCreate($event)"
+>
+</app-folder-create-modal>
+
+<app-folder-create-modal
+  [showModal]="showCreateModal"
+  [workspaceId]="workspaceId"
+  [parentFolderId]="parentFolderId"
+  (closeModal)="showCreateModal = false"
+  (folderCreated)="handleFolderCreated($event)">
+</app-folder-create-modal>
+<app-folder-create-modal
+  [showModal]="showEditModal"
+  [workspaceId]="workspaceId"
+  [parentFolderId]="parentFolderId"
+  (closeModal)="closeModals()"
+  (folderCreated)="onEdit($event)">
+</app-folder-create-modal>

@@ -1,0 +1,26 @@
+.modal-backdrop {
+  z-index: 1050 !important;
+}
+
+.modal {
+  z-index: 1060 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5); /* optional darker overlay */
+}
+
+.modal.fade.show.d-block {
+  display: flex !important;
+}
+
+.modal-dialog {
+  max-width: 500px;
+  width: 100%;
+}

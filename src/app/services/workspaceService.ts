@@ -31,7 +31,7 @@ export class WorkspaceService {
     return this.http.put<Workspace>(`${this.apiUrl}/${id}`, workspace);
   }
 
-  getById(id: string): Observable<Workspace> {
+  getWorkspace(id: string): Observable<Workspace> {
     return this.http.get<Workspace>(`${this.apiUrl}/${id}`);
   }
 }

@@ -4,6 +4,7 @@ import { CreateWorkspaceModal } from '../create-workspace-modal/create-workspace
 import { Workspace } from '../models/workspace.model';
 import { WorkspaceService } from '../services/workspaceService';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-workspace-list',
@@ -19,7 +20,7 @@ export class WorkspaceList implements OnInit {
   editWorkspaceData: Workspace | null = null;
   showEditModal = false;
 
-  constructor(private workspaceService: WorkspaceService) {}
+  constructor(private workspaceService: WorkspaceService, private router:Router) {}
 
   ngOnInit() {
     this.fetch();
@@ -69,5 +70,16 @@ export class WorkspaceList implements OnInit {
           this.closeEditModal();
         });
     }
+  }
+
+
+
+
+  navigateToWorkspace(workspaceId: string | undefined) {
+    if (!workspaceId) {
+      console.error('Workspace ID is undefined');
+      return;
+    }
+    this.router.navigate(['/workspaces', workspaceId]);
   }
 }

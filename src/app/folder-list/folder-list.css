@@ -1,0 +1,7 @@
+.folder-card {
+  overflow: visible !important;
+  position: relative;
+}
+.dropdown-menu {
+  z-index: 1050; 
+}

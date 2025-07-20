@@ -1,0 +1,20 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a [routerLink]="['/workspaces', workspaceId, 'folders']">
+        <i class="bi bi-house-door"></i> Root
+      </a>
+    </li>
+    @for (folder of folderPath; track folder.id; let last = $last) {
+<li class="breadcrumb-item" [class.active]="last" [attr.aria-current]="last ? 'page' : null">
+        @if (last) {
+          {{ folder.name }}
+        } @else {
+          <a [routerLink]="['/workspaces', workspaceId, 'folders', folder.id]">
+            {{ folder.name }}
+          </a>
+        }
+      </li>
+    }
+  </ol>
+</nav>
