@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   providers: [WorkspaceService],
-  templateUrl: './workspace-list.html', // OR use inline template, not both
+  templateUrl: './workspace-list.html',
   styleUrls: ['./workspace-list.css'],
 })
 export class WorkspaceList implements OnInit {

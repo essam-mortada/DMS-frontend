@@ -1,0 +1,732 @@
+/* ===== CSS CUSTOM PROPERTIES ===== */
+:root,
+html.light-theme,
+body.light-theme {
+  /* Primary Colors */
+  --primary-color: #667eea;
+  --primary-hover: #5a67d8;
+  --primary-light: rgba(102, 126, 234, 0.1);
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* Background Colors */
+  --bg-body: #f9fafb;
+  --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bg-secondary: rgba(255, 255, 255, 0.95);
+  --bg-card: #ffffff;
+  --bg-header: #f8f9fa;
+  --bg-table-header: #f8f9fa;
+
+  /* Text Colors */
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --text-muted: #a0aec0;
+  --text-white: #ffffff;
+
+  /* Border Colors */
+  --border-color: #e2e8f0;
+  --border-light: rgba(255, 255, 255, 0.2);
+  --border-focus: #667eea;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  /* Status Colors */
+  --success-color: #48bb78;
+  --warning-color: #ed8936;
+  --danger-color: #e53e3e;
+  --info-color: #4299e1;
+
+  /* File Type Colors */
+  --pdf-color: #e53e3e;
+  --pdf-bg: rgba(229, 62, 62, 0.1);
+  --word-color: #3182ce;
+  --word-bg: rgba(49, 130, 206, 0.1);
+  --excel-color: #38a169;
+  --excel-bg: rgba(56, 161, 105, 0.1);
+  --image-color: #ed8936;
+  --image-bg: rgba(237, 137, 54, 0.1);
+}
+
+/* ===== DARK THEME VARIABLES ===== */
+html.dark-theme,
+body.dark-theme {
+  /* Primary Colors */
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: rgba(99, 102, 241, 0.2);
+  --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+
+  /* Background Colors */
+  --bg-body: #0f172a;
+  --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --bg-secondary: #1e293b;
+  --bg-card: #334155;
+  --bg-header: #1e293b;
+  --bg-table-header: #1e293b;
+
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e0;
+  --text-muted: #94a3b8;
+  --text-white: #ffffff;
+
+  /* Border Colors */
+  --border-color: #475569;
+  --border-light: rgba(255, 255, 255, 0.1);
+  --border-focus: #6366f1;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  /* Status Colors */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+
+  /* File Type Colors */
+  --pdf-color: #ef4444;
+  --pdf-bg: rgba(239, 68, 68, 0.2);
+  --word-color: #3b82f6;
+  --word-bg: rgba(59, 130, 246, 0.2);
+  --excel-color: #10b981;
+  --excel-bg: rgba(16, 185, 129, 0.2);
+  --image-color: #f59e0b;
+  --image-bg: rgba(245, 158, 11, 0.2);
+}
+
+/* ===== GLOBAL STYLES ===== */
+body {
+  background-color: var(--bg-body) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.main-container {
+  background: var(--bg-primary) !important;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: var(--text-primary) !important;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+/* ===== SEARCH INPUT ===== */
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  background-color: var(--bg-card) !important;
+  border: 2px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: 50px !important;
+  padding-left: 3rem !important;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-focus) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.search-icon {
+  color: var(--text-muted);
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+/* ===== CUSTOM TABS ===== */
+.custom-tabs-container {
+  margin-bottom: 2rem;
+}
+
+.custom-tabs {
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.custom-tab {
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.custom-tab:hover {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+}
+
+.custom-tab.active {
+  background: var(--primary-gradient) !important;
+  color: var(--text-white) !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+/* ===== CONTENT AREAS ===== */
+.content-header {
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.content-title {
+  color: var(--text-primary) !important;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.content-subtitle {
+  color: var(--text-secondary) !important;
+  margin-bottom: 0;
+}
+
+/* ===== STATS CARDS ===== */
+.stats-card {
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-lg) !important;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.stats-card-body {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+.stats-number {
+  color: var(--text-primary) !important;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.stats-label {
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stats-trend {
+  color: var(--success-color) !important;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ===== CONTENT CARDS ===== */
+.content-card {
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-lg) !important;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.content-card .card-header {
+  background: var(--bg-header) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-card .card-title {
+  color: var(--text-primary) !important;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.content-card .card-body {
+  padding: 2rem;
+}
+
+/* ===== DOCUMENT ITEMS ===== */
+.document-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.document-item:hover {
+  background: var(--primary-light) !important;
+  border-radius: 10px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.document-name {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.document-meta {
+  color: var(--text-secondary) !important;
+  margin-bottom: 0;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-secondary) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  color: var(--text-muted) !important;
+  margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+  color: var(--text-primary) !important;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: var(--text-secondary) !important;
+  margin-bottom: 2rem;
+}
+
+/* ===== TABLES ===== */
+.documents-table {
+  margin-bottom: 0;
+}
+
+.documents-table thead th {
+  background: var(--bg-table-header) !important;
+  border: none !important;
+  font-weight: 700;
+  color: var(--text-primary) !important;
+  padding: 1.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.documents-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.documents-table tbody tr:hover {
+  background: var(--primary-light) !important;
+}
+
+.documents-table td {
+  padding: 1.5rem !important;
+  border-color: var(--border-color) !important;
+  vertical-align: middle;
+  color: var(--text-primary) !important;
+}
+
+/* ===== FILE ICONS ===== */
+.file-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+}
+
+.file-icon .fa-file-pdf {
+  color: var(--pdf-color) !important;
+  background: var(--pdf-bg) !important;
+}
+
+.file-icon .fa-file-word {
+  color: var(--word-color) !important;
+  background: var(--word-bg) !important;
+}
+
+.file-icon .fa-file-excel {
+  color: var(--excel-color) !important;
+  background: var(--excel-bg) !important;
+}
+
+.file-icon .fa-file-image {
+  color: var(--image-color) !important;
+  background: var(--image-bg) !important;
+}
+
+.file-icon .fa-file {
+  color: var(--text-muted) !important;
+  background: rgba(148, 163, 184, 0.1) !important;
+}
+
+/* ===== BADGES ===== */
+.file-type-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+}
+
+.file-type-badge.badge-pdf {
+  background: var(--pdf-bg) !important;
+  color: var(--pdf-color) !important;
+}
+
+.file-type-badge.badge-word {
+  background: var(--word-bg) !important;
+  color: var(--word-color) !important;
+}
+
+.file-type-badge.badge-excel {
+  background: var(--excel-bg) !important;
+  color: var(--excel-color) !important;
+}
+
+.file-type-badge.badge-image {
+  background: var(--image-bg) !important;
+  color: var(--image-color) !important;
+}
+
+.workspace-badge {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ===== FORM CONTROLS ===== */
+.form-control,
+.form-select {
+  background-color: var(--bg-card) !important;
+  border: 2px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-focus) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.form-control::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  background: var(--primary-gradient) !important;
+  border: none !important;
+  color: var(--text-white) !important;
+  border-radius: 10px !important;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
+  color: var(--text-white) !important;
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  background: var(--bg-card) !important;
+  border-radius: 10px !important;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--text-white) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btn-outline-success {
+  border-color: var(--success-color) !important;
+  color: var(--success-color) !important;
+  background: var(--bg-card) !important;
+}
+
+.btn-outline-success:hover {
+  background: var(--success-color) !important;
+  border-color: var(--success-color) !important;
+  color: var(--text-white) !important;
+}
+
+.btn-outline-danger {
+  border-color: var(--danger-color) !important;
+  color: var(--danger-color) !important;
+  background: var(--bg-card) !important;
+}
+
+.btn-outline-danger:hover {
+  background: var(--danger-color) !important;
+  border-color: var(--danger-color) !important;
+  color: var(--text-white) !important;
+}
+
+.btn-outline-info {
+  border-color: var(--info-color) !important;
+  color: var(--info-color) !important;
+  background: var(--bg-card) !important;
+}
+
+.btn-outline-info:hover {
+  background: var(--info-color) !important;
+  border-color: var(--info-color) !important;
+  color: var(--text-white) !important;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-buttons-group .btn {
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.action-buttons-group .btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== TEXT UTILITIES ===== */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.text-primary {
+  color: var(--text-primary) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* ===== PROGRESS BARS ===== */
+.progress {
+  background: var(--border-color) !important;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.progress-bar {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* ===== BOOTSTRAP OVERRIDES ===== */
+.table {
+  --bs-table-color: var(--text-primary);
+  --bs-table-bg: transparent;
+  --bs-table-hover-color: var(--text-primary);
+  --bs-table-hover-bg: var(--primary-light);
+  color: var(--text-primary) !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--primary-light) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ===== MODAL OVERRIDES ===== */
+.modal-content {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.modal-header {
+  border-bottom-color: var(--border-color) !important;
+}
+
+.modal-footer {
+  border-top-color: var(--border-color) !important;
+}
+
+.modal-title {
+  color: var(--text-primary) !important;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-card);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ===== ANIMATIONS ===== */
+.stats-card {
+  animation: slideInUp 0.6s ease;
+}
+
+.stats-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.stats-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.stats-card:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-content-wrapper {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem !important;
+  }
+
+  .content-title {
+    font-size: 1.5rem !important;
+  }
+
+  .stats-card-body {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
+  .content-header .d-flex {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .custom-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .documents-table {
+    font-size: 0.875rem;
+  }
+
+  .action-buttons-group {
+    flex-direction: column;
+  }
+}

@@ -14,24 +14,36 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets/css",
+                "output": "/assets/css/"
+              },
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
             "styles": [
+              "src/custom-theme.scss",
               "src/styles.css",
-              "src/assets/css/styles.css"
-            ]
-            ,
-              "scripts": [
+              "src/assets/css/styles.css",
+              "src/assets/css/dark-theme.css"
+            ],
+            "scripts": [
               "src/assets/js/main.js",
-  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]
           },
           "configurations": {
@@ -76,12 +88,16 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "src/assets/css",
+                "output": "/assets/css/"
+              },
               {
                 "glob": "**/*",
                 "input": "public"
@@ -89,12 +105,14 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/assets/css/styles.css"
-
+              "src/assets/css/styles.css",
+              "src/assets/css/dark-theme.css"
             ],
             "scripts": [
               "src/assets/js/main.js",
-  "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]
           }
         }

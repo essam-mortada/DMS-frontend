@@ -12,17 +12,9 @@
       [folderPath]="folderPath">
     </app-folder-breadcrumbs>
   </div>
-
-  <!-- Action Buttons -->
-  <div class="d-flex gap-2 mb-4">
-    <button class="btn btn-primary" (click)="openCreateFolderModal()">
-      <i class="bi bi-folder-plus me-2"></i> New Folder
-    </button>
-
-    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
-      <i class="bi bi-upload me-2"></i> Upload Document
-    </button>
-  </div>
+<button class="btn btn-primary" (click)="openUploadModal()">
+        <i class="fa fa-upload me-2"></i> Upload Document
+      </button>
 
   <!-- Folder List -->
   <app-folder-list
@@ -32,21 +24,36 @@
   </app-folder-list>
 
   <!-- Document List -->
-  <div class="mt-5">
-    <h5 class="mb-3">
-      <i class="bi bi-files me-2"></i>
-      Documents
-    </h5>
-
+       <div class="card mt-5">
+  <div class="card-body">
+    <app-document-list
+                        [workspaceId]="workspaceId"
+                       (download)="downloadDocument($event.id!, $event.name, $event.type)"
+                       (delete)="deleteDocument($event)">
+    </app-document-list>
   </div>
+</div>
 
   <!-- Create Folder Modal -->
-  @if (showCreateFolderModal) {
-    <div #createFolderModal class="modal fade" tabindex="-1" aria-hidden="true">
-      <app-folder-create-modal
-        (folderCreated)="onCreateFolder($event)"
-        (closeModal)="hideCreateFolderModal()">
-      </app-folder-create-modal>
+ <!-- Create Folder Modal -->
+<!-- Create Folder Modal -->
+
+
+<!-- Upload Document Modal -->
+@if (showUploadModal) {
+  <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>
+  <div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" (click)="$event.stopPropagation()">
+      <app-document-upload
+        [workspaceId]="workspaceId"
+        [folderId]="currentFolderId"
+        (documentUploaded)="onDocumentUploaded()"
+        (close)="closeUploadModal()">
+      </app-document-upload>
     </div>
-  }
+  </div>
+}
+
+
 </div>
+

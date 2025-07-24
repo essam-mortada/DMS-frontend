@@ -1,37 +1,110 @@
-<div class="form-container">
-  <h2>Login</h2>
-  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-    <input
-      type="email"
-      name="email"
-      [(ngModel)]="email"
-      placeholder="Email"
-      required
-      #emailInput="ngModel"
-    />
-    <div *ngIf="emailInput.invalid && emailInput.touched" class="error">
-      Valid email is required.
+<div class="login-container">
+  <div class="login-background">
+    <div class="background-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
     </div>
-
-    <input
-      type="password"
-      name="password"
-      [(ngModel)]="password"
-      placeholder="Password"
-      required
-      minlength="6"
-      #passwordInput="ngModel"
-    />
-    <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error">
-      Password must be at least 6 characters.
-    </div>
-
-    <button type="submit" [disabled]="loginForm.invalid">Login</button>
-  </form>
-
-  <div *ngIf="backendError" class="error">
-    {{ backendError }}
   </div>
 
-  <a routerLink="/register">Don't have an account? Register</a>
+  <div class="login-content">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo">
+          <i class="fas fa-folder-open"></i>
+        </div>
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-subtitle">Sign in to your DocuManager account</p>
+      </div>
+
+      <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" class="login-form">
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <div class="input-container">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-input"
+              [(ngModel)]="email"
+              placeholder="Enter your email"
+              required
+              #emailInput="ngModel"
+              [class.error]="emailInput.invalid && emailInput.touched"
+            />
+          </div>
+          <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            Valid email is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-container">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              name="password"
+              class="form-input"
+              [(ngModel)]="password"
+              placeholder="Enter your password"
+              required
+              minlength="6"
+              #passwordInput="ngModel"
+              [class.error]="passwordInput.invalid && passwordInput.touched"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+            >
+              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+          <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            Password must be at least 6 characters
+          </div>
+        </div>
+
+       
+
+        <button
+          type="submit"
+          class="login-btn"
+          [disabled]="loginForm.invalid || isLoading"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">
+            <i class="fas fa-sign-in-alt me-2"></i>
+            Sign In
+          </span>
+          <span *ngIf="isLoading" class="loading-content">
+            <i class="fas fa-spinner fa-spin me-2"></i>
+            Signing In...
+          </span>
+        </button>
+
+        <div *ngIf="backendError" class="error-alert">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>{{ backendError }}</span>
+        </div>
+      </form>
+
+      <div class="login-footer">
+        <p class="signup-text">
+          Don't have an account?
+          <a routerLink="/register" class="signup-link">Create one here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle-container">
+      <app-theme-toggle></app-theme-toggle>
+    </div>
+  </div>
 </div>

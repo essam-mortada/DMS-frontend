@@ -36,6 +36,16 @@
             font-size: 2rem;
             color: #2563eb;
         }
+        .logo-link {
+            text-decoration: none;
+            color: #111827;
+            font-size: 50;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .logo-link:hover {
+            color: #2563eb;
+        }
 
         .logo h1 {
             font-size: 1.5rem;

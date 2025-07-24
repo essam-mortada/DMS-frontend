@@ -7,10 +7,11 @@ import { Header } from "../header/header";
 import { finalize } from 'rxjs';
 import { FolderBreadcrumbs } from "../folder-breadcrumbs/folder-breadcrumbs";
 import { FolderCreateModal } from "../folder-create-modal/folder-create-modal";
+import { DocumentUploadComponent } from '../upload-modal/upload-modal';
 
 @Component({
   selector: 'app-folder-list',
-  imports: [CommonModule, RouterModule, Header, FolderCreateModal],
+  imports: [CommonModule, RouterModule, FolderCreateModal],
   templateUrl: './folder-list.html',
   styleUrl: './folder-list.css'
 })
@@ -132,6 +133,7 @@ loadFolders(): void {
   this.parentFolderId = parentFolderId;
   this.showCreateModal = true;
 }
+
 
 handleFolderCreated(folderData: {
   name: string;

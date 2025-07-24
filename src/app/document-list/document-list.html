@@ -1,1 +1,35 @@
-<p>document-list works!</p>
+<div class="row">
+      @for (document of documents; track document.id) {
+
+  <div class="col-md-4 mb-4 document-grid" >
+    <div class="card h-100 shadow-sm document-card">
+      <div class="card-body">
+        <a style="text-decoration: none;" [routerLink]="['/preview', document.id]" >
+        <h5 class="card-title">{{ document.name }}</h5>        <i class="fa fa-file document-icon"></i>
+        </a>
+
+
+        <p class="card-text document-details">
+          <strong>Type:</strong> {{ document.type.split('application/') }}<br />
+          <strong>Uploaded:</strong> {{ document.createdAt | date : 'short' }}<br />
+        </p>
+        <div class="d-flex justify-content-between document-actions">
+          <button class="btn btn-sm btn-outline-primary" (click)="onDownload(document)">
+            <i class="fas fa-download"></i> Download
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="onDelete(document.id!)">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+          <a class="btn btn-sm btn-outline-warning" [routerLink]="['/preview', document.id]">
+             <i class="fas fa-eye"></i>preview</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+    }@empty {
+    <div class="alert alert-info">
+      No documents found in this folder.
+    </div>
+  }
+</div>

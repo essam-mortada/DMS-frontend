@@ -2,7 +2,9 @@
     <div class="header-content">
         <div class="logo">
             <i class="fas fa-folder"></i>
+            <a href="/dashboard" style="text-decoration: none;" class="logo-link">
             <h1>DocuManager</h1>
+            </a>
         </div>
         <div class="header-actions">
             <div class="search-container">
@@ -23,7 +25,7 @@
   <div class="dropdown-menu dropdown-menu-end"
        [class.show]="isDropdownOpen"
        aria-labelledby="userDropdown">
-   
+
     <button class="dropdown-item" (click)="logout()">
       <i class="fas fa-sign-out-alt me-2"></i> Logout
     </button>

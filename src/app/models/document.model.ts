@@ -1,0 +1,13 @@
+export interface Document {
+  id?: string;
+  name: string;
+  type: string;
+  url?: string;
+  ownerNid?: string;
+  workspaceId: string;
+  folderId?: string | null;
+  tags?: string[];
+  deleted?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

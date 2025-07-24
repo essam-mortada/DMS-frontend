@@ -1,32 +1,113 @@
 <div *ngIf="workspaces?.length; else noWorkspacesTemplate">
   <div class="workspace-grid">
-    <div class="workspace-card" *ngFor="let workspace of workspaces" (click)="navigateToWorkspace(workspace.id)">
-      <div class="workspace-header d-flex justify-content-between align-items-center">
-        <div class="workspace-title">
-          <i class="fas fa-folder" style="color: #2563eb"></i>
-          {{ workspace.name }}
+    <div
+      class="workspace-card"
+      *ngFor="let workspace of workspaces"
+      (click)="navigateToWorkspace(workspace.id)"
+    >
+      <div class="workspace-card-header">
+        <div class="workspace-icon">
+          <i class="fas fa-folder"></i>
         </div>
-        <div class="dropdown" [class.show]="openDropdownId === workspace.id" (document:click)="closeDropdown()">
-          <button class="btn btn-link text-dark dropdown-toggle"
-                  type="button"
-                  (click)="toggleDropdown(workspace.id!); $event.stopPropagation()"
-                  [attr.aria-expanded]="openDropdownId === workspace.id">
+        <div class="workspace-dropdown">
+          <button
+            class="dropdown-toggle-btn"
+            type="button"
+            (click)="toggleDropdown(workspace.id!); $event.stopPropagation()"
+            [attr.aria-expanded]="openDropdownId === workspace.id"
+          >
             <i class="fas fa-ellipsis-v"></i>
           </button>
-          <div class="dropdown-menu" [class.show]="openDropdownId === workspace.id">
-            <button class="dropdown-item" (click)="editWorkspace(workspace); $event.stopPropagation()">Edit</button>
-            <button class="dropdown-item text-danger" (click)="deleteWorkspace(workspace.id!); $event.stopPropagation()">Delete</button>
+          <div
+            class="workspace-dropdown-menu"
+            [class.show]="openDropdownId === workspace.id"
+            (document:click)="closeDropdown()"
+          >
+            <button
+              class="dropdown-item"
+              (click)="editWorkspace(workspace); $event.stopPropagation()"
+            >
+              <i class="fas fa-edit me-2"></i>
+              Edit
+            </button>
+            <button
+              class="dropdown-item danger"
+              (click)="deleteWorkspace(workspace.id!); $event.stopPropagation()"
+            >
+              <i class="fas fa-trash me-2"></i>
+              Delete
+            </button>
           </div>
         </div>
       </div>
-      <p class="text-sm text-muted mb-4">Workspace created by {{ workspace.userNid }}</p>
-      <div class="workspace-meta">
-        <!-- Additional workspace metadata here -->
+
+      <div class="workspace-card-body">
+        <h3 class="workspace-title">{{ workspace.name }}</h3>
+
+        <div class="workspace-meta">
+          <div class="created-date">
+            <i class="fas fa-calendar-alt"></i>
+            <span>{{ workspace.createdAt | date:'short' }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 <ng-template #noWorkspacesTemplate>
-  <div class="text-muted">No workspaces found.</div>
+  <div class="empty-workspace-state">
+    <div class="empty-state-icon">
+      <i class="fas fa-folder-open"></i>
+    </div>
+    <h3>No workspaces found</h3>
+    <p>Create your first workspace to start organizing your documents</p>
+  </div>
 </ng-template>
 
+<!-- Edit Workspace Modal -->
+<div *ngIf="showEditModal" class="modal  modal-overlay" (click)="closeEditModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="fas fa-edit me-2"></i>
+        Edit Workspace
+      </h4>
+      <button class="modal-close-btn" (click)="closeEditModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="saveWorkspace()" #editForm="ngForm" *ngIf="editWorkspaceData">
+        <div class="form-group">
+          <label for="workspaceName" class="form-label">Workspace Name</label>
+          <input
+            type="text"
+            id="workspaceName"
+            class="form-control"
+            [(ngModel)]="editWorkspaceData.name"
+            name="workspaceName"
+            placeholder="Enter workspace name"
+            required
+            #workspaceNameInput="ngModel"
+          >
+          <div *ngIf="workspaceNameInput.invalid && workspaceNameInput.touched" class="error-message">
+            Workspace name is required
+          </div>
+        </div>
+
+
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeEditModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">
+            <i class="fas fa-save me-2"></i>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

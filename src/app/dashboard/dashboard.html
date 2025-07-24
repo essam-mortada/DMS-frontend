@@ -1,157 +1,389 @@
-<app-header></app-header>
 
-<div class="container-fluid mt-3">
-  <div class="row">
-    <div class="col-12">
-      <!-- Tab Navigation -->
-      <ul class="nav nav-tabs mb-4">
+<div class="main-container">
+  <div class="container-fluid">
+    <!-- Header Section -->
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="page-title">
+            <i class="fas fa-folder-open text-primary me-3"></i>
+            DocuManager
+          </h1>
+          <p class="page-subtitle">Organize and manage your documents efficiently</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-container me-3">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              class="form-control search-input"
+              placeholder="Search documents..."
+              (input)="onSearch()"
+            >
+          </div>
+          <!-- Theme Toggle -->
+          <app-theme-toggle></app-theme-toggle>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Tab Navigation -->
+    <div class="custom-tabs-container">
+      <ul class="nav custom-tabs">
         <li class="nav-item">
-          <button class="nav-link"
-                  [ngClass]="{ 'active': activeTab === 'dashboard' }"
-                  (click)="setTab('dashboard')">
+          <button
+            class="nav-link custom-tab"
+            [ngClass]="{ 'active': activeTab === 'dashboard' }"
+            (click)="setTab('dashboard')"
+          >
+            <i class="fas fa-chart-pie me-2"></i>
             Dashboard
           </button>
         </li>
         <li class="nav-item">
-          <button class="nav-link"
-                  [ngClass]="{ 'active': activeTab === 'workspaces' }"
-                  (click)="setTab('workspaces')">
+          <button
+            class="nav-link custom-tab"
+            [ngClass]="{ 'active': activeTab === 'workspaces' }"
+            (click)="setTab('workspaces')"
+          >
+            <i class="fas fa-folder me-2"></i>
             Workspaces
+            <span class="badge bg-primary ms-2">{{ workspaces.length }}</span>
           </button>
         </li>
         <li class="nav-item">
-          <button class="nav-link"
-                  [ngClass]="{ 'active': activeTab === 'documents' }"
-                  (click)="setTab('documents')">
+          <button
+            class="nav-link custom-tab"
+            [ngClass]="{ 'active': activeTab === 'documents' }"
+            (click)="setTab('documents')"
+          >
+            <i class="fas fa-file-alt me-2"></i>
             Documents
+            <span class="badge bg-success ms-2">{{ documents.length }}</span>
           </button>
         </li>
       </ul>
+    </div>
 
-      <!-- Dashboard Tab -->
-      <div *ngIf="activeTab === 'dashboard'" class="tab-pane fade show active">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="h2 font-weight-bold">Dashboard</h2>
-          <div class="btn-group">
-            <button class="btn btn-primary mr-2" (click)="openCreateWorkspaceModal()">
-              <i class="fas fa-plus mr-1"></i>
+    <!-- Dashboard Tab -->
+    <div *ngIf="activeTab === 'dashboard'" class="tab-content-wrapper">
+      <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="content-title">Dashboard Overview</h2>
+            <p class="content-subtitle">Get insights into your document management</p>
+          </div>
+          <div class="action-buttons">
+            <button
+              class="btn btn-outline-primary me-2"
+              (click)="openUploadModal()"
+            >
+              <i class="fas fa-upload me-2"></i>
+              Upload Document
+            </button>
+            <button
+              class="btn btn-primary"
+              (click)="openCreateWorkspaceModal()"
+            >
+              <i class="fas fa-plus me-2"></i>
               New Workspace
             </button>
-            <button class="btn btn-secondary" (click)="openUploadModal()">
-              <i class="fas fa-upload mr-1"></i>
-              Upload Document
-            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Stats Cards -->
+      <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card stats-card-primary">
+            <div class="stats-card-body">
+              <div class="stats-icon">
+                <i class="fas fa-folder"></i>
+              </div>
+              <div class="stats-content">
+                <h3 class="stats-number">{{ workspaces.length }}</h3>
+                <p class="stats-label">Total Workspaces</p>
+                <div class="stats-trend">
+                  <i class="fas fa-arrow-up"></i>
+                  <span>+12% from last month</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="row">
-          <div class="col-md-3 mb-4">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="card-title mb-0">Total Workspaces</h5>
-                  <i class="fas fa-folder text-muted"></i>
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card stats-card-success">
+            <div class="stats-card-body">
+              <div class="stats-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="stats-content">
+                <h3 class="stats-number">{{ documents.length }}</h3>
+                <p class="stats-label">Total Documents</p>
+                <div class="stats-trend">
+                  <i class="fas fa-arrow-up"></i>
+                  <span>+8% from last month</span>
                 </div>
-                <p class="h4 mt-2" id="totalWorkspaces">4</p>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="col-md-3 mb-4">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="card-title mb-0">Total Documents</h5>
-                  <i class="fas fa-file text-muted"></i>
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card stats-card-warning">
+            <div class="stats-card-body">
+              <div class="stats-icon">
+                <i class="fas fa-cloud"></i>
+              </div>
+              <div class="stats-content">
+                <h3 class="stats-number">24.8 GB</h3>
+                <p class="stats-label">Storage Used</p>
+                <div class="stats-progress">
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 65%"></div>
+                  </div>
+                  <small>65% of 40GB</small>
                 </div>
-                <p class="h4 mt-2" id="totalDocuments">6</p>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="col-md-3 mb-4">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="card-title mb-0">Storage Used</h5>
-                  <i class="fas fa-upload text-muted"></i>
-                </div>
-                <p class="h4 mt-2">24.8 GB</p>
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card stats-card-info">
+            <div class="stats-card-body">
+              <div class="stats-icon">
+                <i class="fas fa-upload"></i>
               </div>
-            </div>
-          </div>
-
-          <div class="col-md-3 mb-4">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="card-title mb-0">Recent Uploads</h5>
-                  <i class="fas fa-upload text-muted"></i>
+              <div class="stats-content">
+                <h3 class="stats-number">12</h3>
+                <p class="stats-label">Recent Uploads</p>
+                <div class="stats-trend">
+                  <span class="text-muted">This week</span>
                 </div>
-                <p class="h4 mt-2">12</p>
-                <small class="text-muted">This week</small>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Workspaces Tab -->
-      <div *ngIf="activeTab === 'workspaces'" class="tab-pane fade show active p-4 bg-white rounded">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="h2 font-weight-bold">Workspaces</h2>
+      <!-- Recent Activity -->
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="content-card">
+            <div class="card-header">
+              <h5 class="card-title">
+                <i class="fas fa-clock me-2"></i>
+                Recent Documents
+              </h5>
+
+            </div>
+            <div class="card-body">
+              <div class="recent-documents">
+                <div *ngFor="let document of documents.slice(0, 5)" class="document-item">
+                  <div class="document-icon">
+                    <i class="fas fa-file-pdf" [ngClass]="getFileIconClass(document.type)"></i>
+                  </div>
+                  <div class="document-info">
+                    <h6 class="document-name">{{ document.name }}</h6>
+                    <p class="document-meta">
+                      <span class="badge badge-type">{{ getFileType(document.type) }}</span>
+                      <span class="text-muted ms-2">{{ document.createdAt | date:'short' }}</span>
+                    </p>
+                  </div>
+                  <div class="document-actions">
+                    <button class="btn btn-sm btn-outline-primary" (click)="downloadDocument(document.id!, document.name, document.type)">
+                      <i class="fas fa-download"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="content-card">
+            <div class="card-header">
+              <h5 class="card-title">
+                <i class="fas fa-chart-bar me-2"></i>
+                Quick Stats
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="quick-stats">
+                <div class="quick-stat-item">
+                  <div class="d-flex justify-content-between">
+                    <span>PDF Documents</span>
+                    <strong>{{ getPDFCount() }}</strong>
+                  </div>
+                  <div class="progress mt-2">
+                    <div class="progress-bar bg-danger" [style.width.%]="(getPDFCount() / documents.length) * 100"></div>
+                  </div>
+                </div>
+                <div class="quick-stat-item">
+                  <div class="d-flex justify-content-between">
+                    <span>Word Documents</span>
+                    <strong>{{ getWordCount() }}</strong>
+                  </div>
+                  <div class="progress mt-2">
+                    <div class="progress-bar bg-primary" [style.width.%]="(getWordCount() / documents.length) * 100"></div>
+                  </div>
+                </div>
+                <div class="quick-stat-item">
+                  <div class="d-flex justify-content-between">
+                    <span>Images</span>
+                    <strong>{{ getImageCount() }}</strong>
+                  </div>
+                  <div class="progress mt-2">
+                    <div class="progress-bar bg-success" [style.width.%]="(getImageCount() / documents.length) * 100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspaces Tab -->
+    <div *ngIf="activeTab === 'workspaces'" class="tab-content-wrapper">
+      <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="content-title">Workspaces</h2>
+            <p class="content-subtitle">Organize your documents into workspaces</p>
+          </div>
           <button class="btn btn-primary" (click)="openCreateWorkspaceModal()">
-            <i class="fas fa-plus mr-1"></i>
-            New Workspace
+            <i class="fas fa-plus me-2"></i>
+            Create Workspace
           </button>
         </div>
-
-        <div *ngIf="workspaces.length === 0" class="alert alert-info">
-          No workspaces found
-        </div>
-
-        <div *ngIf="workspaces.length > 0">
-          <p class="text-muted mb-4">Manage your workspaces and documents.</p>
-          <app-workspace-list [workspaces]="workspaces" #workspaceList></app-workspace-list>
-        </div>
       </div>
 
-      <!-- Documents Tab -->
-      <div *ngIf="activeTab === 'documents'" class="tab-pane fade show active">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="h2 font-weight-bold">All Documents</h2>
-          <div class="d-flex">
-            <select class="form-control mr-2" style="width: auto" id="workspaceFilter">
+      <div *ngIf="workspaces.length === 0" class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-folder-open"></i>
+        </div>
+        <h4>No workspaces yet</h4>
+        <p>Create your first workspace to start organizing your documents</p>
+        <button class="btn btn-primary" (click)="openCreateWorkspaceModal()">
+          <i class="fas fa-plus me-2"></i>
+          Create First Workspace
+        </button>
+      </div>
+
+      <div *ngIf="workspaces.length > 0" class="workspaces-grid">
+        <app-workspace-list
+          [workspaces]="workspaces"
+          #workspaceList
+        ></app-workspace-list>
+      </div>
+    </div>
+
+    <!-- Documents Tab -->
+    <div *ngIf="activeTab === 'documents'" class="tab-content-wrapper">
+      <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="content-title">All Documents</h2>
+            <p class="content-subtitle">Browse and manage all your documents</p>
+          </div>
+          <div class="d-flex align-items-center">
+            <select class="form-select me-3" style="width: auto;" id="workspaceFilter">
               <option value="">All Workspaces</option>
+              <option *ngFor="let workspace of workspaces" [value]="workspace.id">
+                {{ workspace.name }}
+              </option>
             </select>
             <button class="btn btn-primary" (click)="openUploadModal()">
-              <i class="fas fa-upload mr-1"></i>
+              <i class="fas fa-upload me-2"></i>
               Upload Document
             </button>
           </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-striped table-hover mb-0">
-                <thead class="thead-light">
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Size</th>
-                    <th>Upload Date</th>
-                    <th>Workspace</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="documentsTable">
-                  <!-- Documents will be populated by JavaScript -->
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div class="content-card">
+        <div class="table-responsive">
+          <table class="table table-hover documents-table">
+            <thead>
+              <tr>
+                <th>
+                  <i class="fas fa-file me-2"></i>
+                  Document
+                </th>
+                <th>
+                  <i class="fas fa-tag me-2"></i>
+                  Type
+                </th>
+                <th>
+                  <i class="fas fa-calendar me-2"></i>
+                  Upload Date
+                </th>
+                <th>
+                  <i class="fas fa-folder me-2"></i>
+                  Workspace
+                </th>
+                <th class="text-center">
+                  <i class="fas fa-cog me-2"></i>
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let document of documents" class="document-row">
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="file-icon me-3">
+                      <i class="fas fa-file" [ngClass]="getFileIconClass(document.type)"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ document.name }}</h6>
+                      <small class="text-muted">{{ getFileSize(document) }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge file-type-badge" [ngClass]="getFileTypeBadgeClass(document.type)">
+                    {{ getFileType(document.type) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="text-muted">{{ document.createdAt | date:'medium' }}</span>
+                </td>
+                <td>
+                  <span class="workspace-badge">{{ getWorkspaceName(document.workspaceId) }}</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group">
+                    <button
+                      class="btn btn-sm btn-outline-info"
+                      [routerLink]="['/preview', document.id]"
+                      title="Preview"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-success"
+                      (click)="downloadDocument(document.id!, document.name, document.type)"
+                      title="Download"
+                    >
+                      <i class="fas fa-download"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="deleteDocument(document.id!)"
+                      title="Delete"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -162,10 +394,11 @@
 <app-create-workspace-modal
   *ngIf="showCreateWorkspaceModal"
   (close)="closeCreateWorkspaceModal()"
-  (onCreated)="workspaceList.fetch(); closeCreateWorkspaceModal()">
-</app-create-workspace-modal>
+  (onCreated)="workspaceList.fetch(); closeCreateWorkspaceModal()"
+></app-create-workspace-modal>
 
-<app-upload-modal
+<app-document-upload
   *ngIf="showUploadModal"
-  (close)="closeUploadModal()">
-</app-upload-modal>
+  (close)="closeUploadModal()"
+  (documentUploaded)="refreshDocuments()"
+></app-document-upload>

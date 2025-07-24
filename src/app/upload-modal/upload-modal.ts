@@ -1,11 +1,80 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { DocumentService } from '../services/document';
+import { WorkspaceService } from '../services/workspaceService';
+import { Workspace } from '../models/workspace.model';
+import { Dashboard } from '../dashboard/dashboard';
 
 @Component({
-  selector: 'app-upload-modal',
-  imports: [],
+  selector: 'app-document-upload',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './upload-modal.html',
-  styleUrl: './upload-modal.css'
 })
-export class UploadModal {
+export class DocumentUploadComponent implements OnInit {
+  documentService = inject(DocumentService);
+  workspaceService = inject(WorkspaceService);
+@Input() parentFolderId: string | null = null;
+@Input() workspaceId: string | null = null;
+  @Input() folderId: string | null = null;
+  @Output() documentUploaded = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
+  workspaces: Workspace[] = [];
+  selectedWorkspaceId: string = '';
 
+  selectedFile: File | null = null;
+  constructor() {
+  }
+  ngOnInit() {
+    this.workspaceService.getAll().subscribe({
+      next: (data) => (this.workspaces = data),
+      error: () => alert('Failed to load workspaces')
+    });
+  }
+
+  onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+upload() {
+  if(this.workspaceId) {
+    this.selectedWorkspaceId = this.workspaceId;
+  } else if (!this.selectedWorkspaceId) {
+    alert("Select a workspace first");
+    return;
+  }
+  if (!this.selectedFile || !this.selectedWorkspaceId) {
+    alert("Select file and workspace first");
+    return;
+  }
+
+  const folderId = this.parentFolderId ?? null;
+
+  this.documentService.upload(this.selectedFile, this.selectedWorkspaceId, folderId).subscribe({
+    next: () => {
+      this.documentUploaded.emit();
+      this.close.emit();
+      //this.dashboard.refreshDocuments();
+    },
+    error: (err) => {
+      console.error('Upload failed', err);
+      alert('Upload failed');
+    }
+  });
+}
+
+
+  closeModal() {
+    const modal = document.getElementById('uploadModal');
+    if (modal) modal.style.display = 'none';
+    this.close.emit();
+    // Clear fields
+    this.selectedFile = null;
+    this.selectedWorkspaceId = '';
+    (document.getElementById('uploadFile') as HTMLInputElement).value = '';
+  }
 }

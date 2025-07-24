@@ -6,6 +6,8 @@ import { AuthGuard } from './services/auth.guard';
 import { Dashboard } from './dashboard/dashboard';
 import { DashboardRedirect } from './dashboard-redirect/dashboard-redirect';
 import { FolderList } from './folder-list/folder-list';
+import { WorkspaceDetails } from './workspace-details/workspace-details';
+import { DocumentPreview } from './document-preview/document-preview';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -29,11 +31,17 @@ export const routes: Routes = [
   {
     path: 'workspaces/:workspaceId',
     canActivate: [AuthGuard],
-    component: FolderList
+    component: WorkspaceDetails
   },
   {
     path: 'workspaces/:workspaceId/folders/:folderId',
     canActivate: [AuthGuard],
     component: FolderList
+  }
+  ,
+  {
+    path: 'preview/:documentId',
+    canActivate: [AuthGuard],
+    component: DocumentPreview
   }
 ];
