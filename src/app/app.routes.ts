@@ -8,6 +8,7 @@ import { DashboardRedirect } from './dashboard-redirect/dashboard-redirect';
 import { FolderList } from './folder-list/folder-list';
 import { WorkspaceDetails } from './workspace-details/workspace-details';
 import { DocumentPreview } from './document-preview/document-preview';
+import { FolderDetails } from './folder-details/folder-details';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -43,5 +44,10 @@ export const routes: Routes = [
     path: 'preview/:documentId',
     canActivate: [AuthGuard],
     component: DocumentPreview
-  }
+  },
+{
+  path:'folders/:folderId',
+  canActivate: [AuthGuard],
+  component: FolderDetails
+}
 ];

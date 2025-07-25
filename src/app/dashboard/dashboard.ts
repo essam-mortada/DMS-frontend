@@ -10,10 +10,11 @@ import { DocumentUploadComponent } from '../upload-modal/upload-modal';
 import { HttpClient } from '@angular/common/http';
 import { Document } from '../models/document.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../services/theme.service';
 import { ThemeToggleComponent } from "../theme-toggle/theme-toggle";
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,14 +28,17 @@ export class Dashboard implements OnInit, OnDestroy {
   showCreateWorkspaceModal = false;
   showUploadModal = false;
   isDarkMode = false
+
   @ViewChild('workspaceList') workspaceList!: WorkspaceList;
   documentService: DocumentService = new DocumentService(inject(HttpClient));
+  authService = inject(AuthService);
   private subscription: Subscription = new Subscription()
 
   constructor(
     private themeService: ThemeService,
     private workspaceService: WorkspaceService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnDestroy(): void {
@@ -279,7 +283,14 @@ getFileTypeBadgeClass(fileType: string): string {
 }
 
 getFileSize(document: any): string {
-  return '2.4 MB';
+  if (document.size) {
+    const sizeInBytes = document.size;
+    if (sizeInBytes < 1024) return `${sizeInBytes} B`;
+    else if (sizeInBytes < 1048576) return `${(sizeInBytes / 1024).toFixed(2)} KB`;
+    else if (sizeInBytes < 1073741824) return `${(sizeInBytes / 1048576).toFixed(2)} MB`;
+    else return `${(sizeInBytes / 1073741824).toFixed(2)} GB`;
+  }
+  return 'Unknown Size';
 }
 
 getWorkspaceName(workspaceId: string): string {
@@ -301,10 +312,55 @@ getImageCount(): number {
   return this.documents.filter(doc => doc.type.includes('image')).length;
 }
 
+getSizeCount(): string {
+  if (!this.documents || this.documents.length === 0) return '0 bytes';
+
+  const totalSizeInBytes = this.documents.reduce((total, doc) => total + (doc.size || 0), 0);
+
+  if (totalSizeInBytes >= 1024 ** 3) {
+    return (totalSizeInBytes / (1024 ** 3)).toFixed(2) + ' GB';
+  } else if (totalSizeInBytes >= 1024 ** 2) {
+    return (totalSizeInBytes / (1024 ** 2)).toFixed(2) + ' MB';
+  } else if (totalSizeInBytes >= 1024) {
+    return (totalSizeInBytes / 1024).toFixed(2) + ' KB';
+  } else {
+    return totalSizeInBytes + ' bytes';
+  }
+}
+
+getStorageUsedPercentage(): number {
+  if (!this.documents || this.documents.length === 0) return 0;
+
+  const totalSizeInBytes = this.documents.reduce((total, doc) => total + (doc.size || 0), 0);
+  const usedGB = totalSizeInBytes / (1024 ** 3);
+  const totalGB = 40; // Assuming the quota is 40GB
+
+  return Math.min(100, +((usedGB / totalGB) * 100).toFixed(2));
+}
+
+
+getRecentUploadsThisWeek(): number {
+  const now = new Date();
+  const startOfWeek = new Date();
+  startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday as start of week
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  return this.documents.filter(doc => {
+    const uploadDate = new Date(doc.updatedAt! || doc.createdAt);
+    return uploadDate >= startOfWeek && uploadDate <= now;
+  }).length;
+}
+
+
 onSearch(): void {
 
   console.log('Searching for:', this.searchQuery);
 }
+
+logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
 // Add this property to your component
 searchQuery: string = '';

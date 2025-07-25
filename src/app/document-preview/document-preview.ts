@@ -5,6 +5,8 @@ import { DocumentService } from '../services/document';
 import { Document } from '../models/document.model';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-document-preview',
@@ -17,6 +19,8 @@ export class DocumentPreview implements OnInit {
   fileType: string = '';
   isLoading: boolean = true;
   error: string | null = null;
+  isDarkMode = false;
+  private subscription: Subscription = new Subscription();
   supportedTypes = ['image/', 'application/pdf'];
 @Output() download = new EventEmitter<Document>();
   @Input() documents: Document[] = [];
@@ -26,13 +30,20 @@ export class DocumentPreview implements OnInit {
     private documentService: DocumentService,
     private sanitizer: DomSanitizer,
     private location: Location,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private themeService: ThemeService
   ) {}
 
   get documentId(): string {
     return this.route.snapshot.params['documentId'];
   }
   ngOnInit(): void {
+      this.subscription.add(
+      this.themeService.darkMode$.subscribe((isDark) => {
+        this.isDarkMode = isDark
+        console.log("Theme changed to:", isDark ? "dark" : "light")
+      }),
+    )
     const documentId = this.route.snapshot.params['documentId'];
     this.loadPreview(documentId);
   }

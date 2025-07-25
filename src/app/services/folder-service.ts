@@ -7,6 +7,7 @@ import { Folder } from '../models/folder.model';
 @Injectable({ providedIn: 'root' })
 export class FolderService {
   private apiUrl = 'http://localhost:8081/api/folders';
+  private documentApiUrl = 'http://localhost:8081/api/documents';
 
   constructor(private http: HttpClient) {}
 
@@ -30,6 +31,13 @@ getFolders(workspaceId: string, parentFolderId: string | null = null): Observabl
   );
 }
 
+getFoldersByParent(parentFolderId: string): Observable<Folder[]> {
+  return this.http.get<Folder[]>(`${this.apiUrl}/parent/${parentFolderId}`);
+}
+
+getFolderDocuments(folderId: string): Observable<Folder[]> {
+  return this.http.get<Folder[]>(`${this.documentApiUrl}/folder/${folderId}/documents`);
+}
   createFolder(name: string, workspaceId: string, parentFolderId: string | null = null): Observable<Folder> {
     return this.http.post<Folder>(this.apiUrl, { name, workspaceId, parentFolderId });
   }

@@ -3,10 +3,11 @@ import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { ThemeToggleComponent } from "../../theme-toggle/theme-toggle";
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ThemeToggleComponent],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -18,6 +19,8 @@ export class Register {
   email = '';
   password = '';
   backendError: string | null = null;
+  showPassword = false;
+  isLoading = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 

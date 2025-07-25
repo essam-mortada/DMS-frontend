@@ -18,6 +18,7 @@ export class DocumentList {
   @Output() documentDeleted = new EventEmitter<void>();
   @Input() documents: Document[] = [];
   showUploadModal: boolean = false;
+    loading = false
   documentService: DocumentService = new DocumentService(inject(HttpClient));
 @Output() download = new EventEmitter<Document>();
 @Output() delete = new EventEmitter<string>();
@@ -54,6 +55,46 @@ export class DocumentList {
     this.documentDeleted.emit();
     this.snackBar.open('Document deleted successfully', 'Close', { duration: 3000 });
   }
+ getFileIcon(fileType: string): string {
+    if (fileType.includes("pdf")) return "fa-file-pdf"
+    if (fileType.includes("word") || fileType.includes("document")) return "fa-file-word"
+    if (fileType.includes("excel") || fileType.includes("spreadsheet")) return "fa-file-excel"
+    if (fileType.includes("image")) return "fa-file-image"
+    return "fa-file"
+  }
 
+  getFileIconClass(fileType: string): string {
+    if (fileType.includes("pdf")) return "pdf"
+    if (fileType.includes("word") || fileType.includes("document")) return "word"
+    if (fileType.includes("excel") || fileType.includes("spreadsheet")) return "excel"
+    if (fileType.includes("image")) return "image"
+    return "default"
+  }
+
+  getFileTypeDisplay(fileType: string): string {
+    if (fileType.includes("pdf")) return "PDF"
+    if (fileType.includes("word") || fileType.includes("document")) return "Word"
+    if (fileType.includes("excel") || fileType.includes("spreadsheet")) return "Excel"
+    if (fileType.includes("image")) return "Image"
+    return "File"
+  }
+
+  getFileTypeBadgeClass(fileType: string): string {
+    if (fileType.includes("pdf")) return "badge-pdf"
+    if (fileType.includes("word") || fileType.includes("document")) return "badge-word"
+    if (fileType.includes("excel") || fileType.includes("spreadsheet")) return "badge-excel"
+    if (fileType.includes("image")) return "badge-image"
+    return "badge-default"
+  }
+
+  getFileSize(document: any): string {
+    if (!document || !document.size) return 'Unknown size';
+    const size = document.size;
+    if (size < 1024) return `${size} B`;
+    else if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+    else if (size < 1024 * 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    else return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    
+  }
 
 }

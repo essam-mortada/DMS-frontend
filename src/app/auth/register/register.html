@@ -1,33 +1,157 @@
-<div class="form-container">
-  <h2>Register</h2>
-  <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
-    <input name="firstName" [(ngModel)]="firstName" placeholder="First Name" required #fn="ngModel" />
-    <div *ngIf="fn.invalid && fn.touched" class="error">First name is required.</div>
+<div class="login-container">
+  <div class="login-background">
+    <div class="background-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
 
-    <input name="lastName" [(ngModel)]="lastName" placeholder="Last Name" required #ln="ngModel" />
-    <div *ngIf="ln.invalid && ln.touched" class="error">Last name is required.</div>
+  <div class="login-content">
 
-    <input name="nationalId" type="number" [(ngModel)]="nationalId" placeholder="National ID" required #nid="ngModel" />
-    <div *ngIf="nid.invalid && nid.touched" class="error">National ID is required.</div>
+    <div class="login-card">
+      <div class="login-header">
+        <app-theme-toggle></app-theme-toggle>
+        <div class="logo">
+          <!-- Your logo or icon here -->
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h1 class="login-title">Register</h1>
+        <p class="login-subtitle">Create your account to get started</p>
+      </div>
 
-    <input type="email" name="email" [(ngModel)]="email" placeholder="Email" required #em="ngModel" />
-    <div *ngIf="em.invalid && em.touched" class="error">Valid email is required.</div>
+      <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" class="login-form">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <div class="input-container">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              class="form-input"
+              name="firstName"
+              [(ngModel)]="firstName"
+              placeholder="First Name"
+              required
+              #fn="ngModel"
+              [class.error]="fn.invalid && fn.touched"
+            />
+          </div>
+          <div *ngIf="fn.invalid && fn.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            First name is required.
+          </div>
+        </div>
 
-    <input
-      type="password"
-      name="password"
-      [(ngModel)]="password"
-      placeholder="Password"
-      required
-      minlength="6"
-      #pw="ngModel"
-    />
-    <div *ngIf="pw.invalid && pw.touched" class="error">Password must be at least 6 characters.</div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <div class="input-container">
+            <i class="fas fa-user input-icon"></i>
+            <input
+              class="form-input"
+              name="lastName"
+              [(ngModel)]="lastName"
+              placeholder="Last Name"
+              required
+              #ln="ngModel"
+              [class.error]="ln.invalid && ln.touched"
+            />
+          </div>
+          <div *ngIf="ln.invalid && ln.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            Last name is required.
+          </div>
+        </div>
 
-    <button type="submit" [disabled]="registerForm.invalid">Register</button>
-  </form>
+        <div class="form-group">
+          <label class="form-label">National ID</label>
+          <div class="input-container">
+            <i class="fas fa-id-card input-icon"></i>
+            <input
+              class="form-input"
+              type="number"
+              name="nationalId"
+              [(ngModel)]="nationalId"
+              placeholder="National ID"
+              required
+              #nid="ngModel"
+              [class.error]="nid.invalid && nid.touched"
+            />
+          </div>
+          <div *ngIf="nid.invalid && nid.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            National ID is required.
+          </div>
+        </div>
 
-  <div *ngIf="backendError" class="error">{{ backendError }}</div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-container">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              class="form-input"
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="Email"
+              required
+              #em="ngModel"
+              [class.error]="em.invalid && em.touched"
+            />
+          </div>
+          <div *ngIf="em.invalid && em.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            Valid email is required.
+          </div>
+        </div>
 
-  <a routerLink="/login">Already have an account? Login</a>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-container">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              class="form-input"
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Password"
+              required
+              minlength="6"
+              #pw="ngModel"
+              [class.error]="pw.invalid && pw.touched"
+            />
+            <button type="button" class="password-toggle">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div *ngIf="pw.invalid && pw.touched" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <div *ngIf="backendError" class="error-alert">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ backendError }}
+        </div>
+
+        <button
+          type="submit"
+          class="login-btn"
+          [disabled]="registerForm.invalid"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">Register</span>
+          <span *ngIf="isLoading" class="loading-content">
+            <i class="fas fa-spinner fa-spin"></i> Processing...
+          </span>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <p class="signup-text">
+          Already have an account? <a routerLink="/login" class="signup-link">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
+

@@ -1,3 +1,4 @@
+
 <div class="modal-backdrop fade show" *ngIf="showModal" (click)="onClose()"></div>
 
 <div class="modal fade show d-block" *ngIf="showModal" tabindex="-1" role="dialog">
@@ -29,7 +30,7 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="onClose()">Cancel</button>
             <button type="submit" class="btn btn-primary"
-                    [disabled]="folderForm.invalid || !workspaceId">
+                    [disabled]="folderForm.invalid || !workspaceId || FolderId">
               Create Folder
             </button>
           </div>

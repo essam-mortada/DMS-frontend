@@ -1,59 +1,79 @@
-<app-header></app-header>
-<div class="container workspace-detail">
+<div class="workspace-detail">
   <!-- Workspace Header -->
   <div class="workspace-header mb-4">
-    <h2 class="mb-3">
-      <i class="bi bi-journal-bookmark-fill text-primary me-2"></i>
-      {{ workspace.name || 'Loading...' }}
-    </h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">
+        <i class="fas fa-folder-open text-primary me-2"></i>
+        {{ workspace.name || 'Loading...' }}
+      </h2>
+
+
+    </div>
 
     <app-folder-breadcrumbs
       [workspaceId]="workspaceId"
       [folderPath]="folderPath">
     </app-folder-breadcrumbs>
   </div>
-<button class="btn btn-primary" (click)="openUploadModal()">
-        <i class="fa fa-upload me-2"></i> Upload Document
-      </button>
 
   <!-- Folder List -->
-  <app-folder-list
-    [workspaceId]="workspaceId"
-    [parentFolderId]="currentFolderId"
-    (folderDeleted)="onFolderDeleted()">
-  </app-folder-list>
+  <div class="card mb-4">
 
-  <!-- Document List -->
-       <div class="card mt-5">
-  <div class="card-body">
-    <app-document-list
-                        [workspaceId]="workspaceId"
-                       (download)="downloadDocument($event.id!, $event.name, $event.type)"
-                       (delete)="deleteDocument($event)">
-    </app-document-list>
-  </div>
-</div>
-
-  <!-- Create Folder Modal -->
- <!-- Create Folder Modal -->
-<!-- Create Folder Modal -->
-
-
-<!-- Upload Document Modal -->
-@if (showUploadModal) {
-  <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>
-  <div class="modal fade show d-block" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document" (click)="$event.stopPropagation()">
-      <app-document-upload
+    <div class="card-body">
+      <app-folder-list
         [workspaceId]="workspaceId"
-        [folderId]="currentFolderId"
-        (documentUploaded)="onDocumentUploaded()"
-        (close)="closeUploadModal()">
-      </app-document-upload>
+        [parentFolderId]="currentFolderId"
+        (folderDeleted)="onFolderDeleted()">
+      </app-folder-list>
     </div>
   </div>
-}
+
+  <!-- Document List -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">
+        <i class="fas fa-file-alt me-2"></i>
+        Documents
+      </h3>
 
 
+    </div>
+    <div class="card-body">
+<button class="btn btn-primary mb-3" (click)="openUploadModal()">
+        <i class="fas fa-upload me-2"></i> Upload Document
+      </button>
+      <app-document-list
+        [workspaceId]="workspaceId"
+        [folderId]="currentFolderId!"
+        (download)="downloadDocument($event.id!, $event.name, $event.type)"
+        (delete)="deleteDocument($event)">
+      </app-document-list>
+    </div>
+  </div>
+
+  <!-- Upload Document Modal -->
+  @if (showUploadModal) {
+    <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">
+              <i class="fas fa-upload me-2"></i>
+              Upload Document
+            </h3>
+            <button type="button" class="btn-close" (click)="closeUploadModal()"></button>
+          </div>
+          <div class="modal-body">
+            <app-document-upload
+              [workspaceId]="workspaceId"
+              [folderId]="currentFolderId"
+              (documentUploaded)="onDocumentUploaded()"
+              (close)="closeUploadModal()">
+            </app-document-upload>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>
-

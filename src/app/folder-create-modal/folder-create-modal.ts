@@ -1,3 +1,4 @@
+
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Validators, FormBuilder, FormsModule, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -10,12 +11,12 @@ import { Validators, FormBuilder, FormsModule, FormGroup, ReactiveFormsModule } 
 export class FolderCreateModal {
  @Input() showModal = false;
   @Input() workspaceId!: string;
-  @Input() parentFolderId: string | null = null;
+  @Input() FolderId: string | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() folderCreated = new EventEmitter<{
     name: string;
     workspaceId: string;
-    parentFolderId: string | null;
+    FolderId: string | null;
   }>();
 
   folderForm: FormGroup;
@@ -32,7 +33,7 @@ export class FolderCreateModal {
     this.folderCreated.emit({
       name: this.folderForm.value.name,
       workspaceId: this.workspaceId,
-      parentFolderId: this.parentFolderId
+      FolderId: this.FolderId
     });
     this.folderForm.reset();
   }
@@ -46,4 +47,3 @@ export class FolderCreateModal {
 
 
 }
-

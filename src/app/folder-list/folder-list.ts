@@ -1,10 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, input, Input, OnInit } from '@angular/core';
 import { Folder } from '../models/folder.model';
 import { FolderService } from '../services/folder-service';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Header } from "../header/header";
-import { finalize } from 'rxjs';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FolderBreadcrumbs } from "../folder-breadcrumbs/folder-breadcrumbs";
 import { FolderCreateModal } from "../folder-create-modal/folder-create-modal";
 import { DocumentUploadComponent } from '../upload-modal/upload-modal';
@@ -35,8 +33,9 @@ get workspaceId(): string {
   openDropdownId: string | null = null;
  showCreateModal = false;
   showEditModal = false;
-  selectedFolder: any = null;
-  constructor(private folderService: FolderService, private route: ActivatedRoute) {}
+ @Input() selectedFolder: any = null;
+
+  constructor(private folderService: FolderService, private route: ActivatedRoute,private router: Router) {}
 
 ngOnInit() {
   this.route.params.subscribe(params => {
@@ -87,7 +86,9 @@ loadFolders(): void {
 
 
 
-
+navigateToFolder(folderId: string): void {
+    this.router.navigate(["/folders", folderId])
+  }
 
   openEditModal(folder: any) {
     this.selectedFolder = folder;
@@ -132,18 +133,19 @@ loadFolders(): void {
   openCreateModal(parentFolderId: string | null = null) {
   this.parentFolderId = parentFolderId;
   this.showCreateModal = true;
+  this.showEditModal = false;
 }
 
 
 handleFolderCreated(folderData: {
   name: string;
   workspaceId: string;
-  parentFolderId: string | null;
+  FolderId: string | null;
 }) {
   this.folderService.createFolder(
     folderData.name,
     folderData.workspaceId,
-    folderData.parentFolderId
+    folderData.FolderId
   ).subscribe({
     next: (newFolder) => {
       this.folders.push(newFolder);

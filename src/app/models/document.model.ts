@@ -6,6 +6,7 @@ export interface Document {
   ownerNid?: string;
   workspaceId: string;
   folderId?: string | null;
+  size?: number;
   tags?: string[];
   deleted?: boolean;
   createdAt?: Date;

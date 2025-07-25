@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FolderService } from '../services/folder-service';
 import { WorkspaceService } from '../services/workspaceService';
 import { Workspace } from '../models/workspace.model';
@@ -14,6 +14,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DocumentService } from '../services/document';
 import { Document } from '../models/document.model';
 import { DocumentUploadComponent } from "../upload-modal/upload-modal";
+import { ThemeService } from '../services/theme.service';
+import { Subscription } from 'rxjs';
 declare var bootstrap: any;
 @Component({
   selector: 'app-workspace-details',
@@ -21,7 +23,7 @@ declare var bootstrap: any;
     RouterModule,
     FolderBreadcrumbs,
     FolderList,
-     Header, DocumentList, DocumentUploadComponent],
+     DocumentList, DocumentUploadComponent],
   templateUrl: './workspace-details.html',
   styleUrl: './workspace-details.css'
 })
@@ -43,6 +45,8 @@ onDocumentDeleted() {
   folderPath: Folder[] = [];
   documents: Document[] = [];
   showCreateFolderModal = false;
+  private subscription: Subscription = new Subscription()
+  isDarkMode = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,10 +54,19 @@ onDocumentDeleted() {
     private folderService: FolderService
     , private snackBar: MatSnackBar
     , private documentService: DocumentService,
+    private router: Router,
+    private themeService: ThemeService
   ) {}
 
 
+
   ngOnInit(): void {
+this.subscription.add(
+      this.themeService.darkMode$.subscribe((isDark) => {
+        this.isDarkMode = isDark
+        console.log("Theme changed to:", isDark ? "dark" : "light")
+      }),
+    )
     this.workspaceId = this.route.snapshot.params['workspaceId'];
     this.currentFolderId = this.route.snapshot.params['folderId'] || null;
 

@@ -1,0 +1,288 @@
+<div class="subfolder-container">
+  <div class="container-fluid">
+    <!-- Header Section -->
+    <div class="subfolder-header">
+      <div class="header-content">
+        <div class="folder-info">
+          <div class="folder-icon-large">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <div class="folder-details">
+            <h1 class="folder-name">{{ currentFolder?.name || "Folder" }}</h1>
+            <div class="folder-breadcrumbs">
+              <span class="breadcrumb-item">
+                <i class="fas fa-home me-1"></i>
+                Workspace
+              </span>
+              <i class="fas fa-chevron-right mx-2 text-muted"></i>
+              <span class="breadcrumb-item active">{{ currentFolder?.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="folder-actions">
+          <button class="btn btn-primary" (click)="openCreateModal()">
+            <i class="fas fa-folder-plus me-2"></i>
+            Create Subfolder
+          </button>
+        </div>
+      </div>
+
+      <!-- Folder Stats -->
+      <div class="folder-stats-bar">
+        <div class="stat-item">
+          <div class="stat-icon"><i class="fas fa-folder"></i></div>
+          <div class="stat-content">
+            <span class="stat-number">{{ childFolders?.length || 0 }}</span>
+            <span class="stat-label">Subfolders</span>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="stat-content">
+            <span class="stat-number">{{ documentCount || 0 }}</span>
+            <span class="stat-label">Documents</span>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="stat-content">
+            <span class="stat-number">{{ currentFolder?.createdAt | date: "MMM d" }}</span>
+            <span class="stat-label">Created</span>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon"><i class="fas fa-clock"></i></div>
+          <div class="stat-content">
+            <span class="stat-number">{{ currentFolder?.updatedAt | date: "MMM d" }}</span>
+            <span class="stat-label">Updated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subfolders Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h3 class="section-title"><i class="fas fa-folder me-2"></i> Subfolders</h3>
+        <span class="item-count" *ngIf="childFolders?.length">
+          {{ childFolders.length }} subfolders
+        </span>
+      </div>
+
+      <div class="section-content">
+        <div *ngIf="childFolders.length > 0; else noSubfolders" class="subfolders-grid">
+          <div
+            class="subfolder-card"
+            *ngFor="let folder of childFolders; trackBy: trackByFolderId"
+            (click)="navigateToFolder(folder.id)"
+          >
+            <div class="subfolder-card-header">
+              <div class="subfolder-icon"><i class="fas fa-folder"></i></div>
+              <div class="subfolder-dropdown">
+                <button
+                  class="dropdown-toggle-btn"
+                  type="button"
+                  (click)="toggleDropdown(folder.id); $event.stopPropagation()"
+                  [attr.aria-expanded]="openDropdownId === folder.id"
+                >
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div
+                  class="subfolder-dropdown-menu"
+                  [class.show]="openDropdownId === folder.id"
+                  (document:click)="closeDropdown()"
+                >
+                  <button class="dropdown-item" (click)="editFolder(folder); $event.stopPropagation()">
+                    <i class="fas fa-edit me-2"></i> Rename
+                  </button>
+                  <button class="dropdown-item danger" (click)="deleteFolder(folder.id); $event.stopPropagation()">
+                    <i class="fas fa-trash me-2"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="subfolder-card-body">
+              <h4 class="subfolder-name" [title]="folder.name">{{ folder.name }}</h4>
+              <div class="subfolder-meta">
+                <div class="meta-item">
+                  <i class="fas fa-calendar-alt"></i>
+                  <span>Created {{ folder.createdAt | date: "MMM d, y" }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="subfolder-card-footer">
+              <div class="quick-actions">
+                <a class="quick-action-btn" [routerLink]="['/folders', folder.id]" title="Open Folder">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noSubfolders>
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-folder-open"></i></div>
+            <h4>No subfolders yet</h4>
+            <p>Create your first subfolder to organize your documents better</p>
+            <button class="btn btn-primary" (click)="openCreateModal()">
+              <i class="fas fa-folder-plus me-2"></i> Create First Subfolder
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+<!-- Document List Section -->
+<div class="subfolder-container">
+  <div class="container-fluid">
+    <div class="content-section mt-5">
+      <!-- Section Header -->
+      <div class="section-header d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="section-title">
+            <i class="fas fa-file-alt me-2"></i> Documents
+          </h3>
+          <span class="item-count text-muted" *ngIf="documentCount">
+            {{ documentCount }} documents
+          </span>
+        </div>
+        <div class="upload-document-section">
+          <button class="btn btn-primary" (click)="openUploadModal()">
+            <i class="fas fa-upload me-2"></i> Upload Document
+          </button>
+        </div>
+      </div>
+
+      <!-- Section Content -->
+      <div class="section-content mt-4">
+        <app-document-list
+          [folderId]="currentFolder?.id">
+        </app-document-list>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>
+
+
+
+<!-- Create Folder Modal -->
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="fas fa-folder-plus me-2"></i>
+        Create New Subfolder
+      </h4>
+      <button class="modal-close-btn" (click)="closeCreateModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <app-folder-create-modal
+        [showModal]="showCreateModal"
+        [workspaceId]="workspaceId"
+        [FolderId]="FolderId"
+        (closeModal)="showCreateModal = false"
+        (folderCreated)="handleFolderCreated($event)"
+      ></app-folder-create-modal>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Folder Modal -->
+<!-- In your edit modal section -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="fas fa-edit me-2"></i>
+        Rename Subfolder
+      </h4>
+      <button class="modal-close-btn" (click)="closeEditModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="saveFolder()" #editForm="ngForm">
+        <div class="form-group">
+          <label for="folderName" class="form-label">
+            <i class="fas fa-folder me-2"></i>
+            Folder Name
+          </label>
+          <input
+            type="text"
+            id="folderName"
+            class="form-control"
+            name="folderName"
+            placeholder="Enter folder name"
+            required
+            [(ngModel)]="editFolderData!.name"
+            #folderNameInput="ngModel"
+          />
+          <div
+            *ngIf="folderNameInput.invalid && folderNameInput.touched"
+            class="error-message"
+          >
+            <i class="fas fa-exclamation-circle me-1"></i>
+            Folder name is required
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="closeEditModal()"
+          >
+            <i class="fas fa-times me-2"></i>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="editForm.invalid"
+          >
+            <i class="fas fa-save me-2"></i>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+  @if (showUploadModal) {
+    <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">
+              <i class="fas fa-upload me-2"></i>
+              Upload Document
+            </h3>
+            <button type="button" class="btn-close" (click)="closeUploadModal()"></button>
+          </div>
+          <div class="modal-body">
+            <app-document-upload
+              [workspaceId]="workspaceId"
+              [folderId]="currentFolderId"
+              (documentUploaded)="onDocumentUploaded()"
+              (close)="closeUploadModal()">
+            </app-document-upload>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
