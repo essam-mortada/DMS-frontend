@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Folder } from '../models/folder.model';
+import { Document } from '../models/document.model';
 
 @Injectable({ providedIn: 'root' })
 export class FolderService {
@@ -35,8 +36,8 @@ getFoldersByParent(parentFolderId: string): Observable<Folder[]> {
   return this.http.get<Folder[]>(`${this.apiUrl}/parent/${parentFolderId}`);
 }
 
-getFolderDocuments(folderId: string): Observable<Folder[]> {
-  return this.http.get<Folder[]>(`${this.documentApiUrl}/folder/${folderId}/documents`);
+getFolderDocuments(folderId: string): Observable<Document[]> {
+  return this.http.get<Document[]>(`${this.documentApiUrl}/folder/${folderId}/documents`);
 }
   createFolder(name: string, workspaceId: string, parentFolderId: string | null = null): Observable<Folder> {
     return this.http.post<Folder>(this.apiUrl, { name, workspaceId, parentFolderId });

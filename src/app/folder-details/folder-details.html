@@ -33,7 +33,7 @@
         <div class="stat-item">
           <div class="stat-icon"><i class="fas fa-folder"></i></div>
           <div class="stat-content">
-            <span class="stat-number">{{ childFolders?.length || 0 }}</span>
+            <span class="stat-number">{{ childFolders!.length || 0 }}</span>
             <span class="stat-label">Subfolders</span>
           </div>
         </div>
@@ -163,9 +163,11 @@
       <!-- Section Content -->
       <div class="section-content mt-4">
         <app-document-list
+          [workspaceId]="workspaceId"
           [folderId]="currentFolder?.id">
         </app-document-list>
       </div>
+
     </div>
   </div>
 </div>
@@ -276,8 +278,8 @@
           </div>
           <div class="modal-body">
             <app-document-upload
-              [workspaceId]="workspaceId"
-              [folderId]="currentFolderId"
+            [workspaceId]="workspaceId"
+            [folderId]="currentFolderId"
               (documentUploaded)="onDocumentUploaded()"
               (close)="closeUploadModal()">
             </app-document-upload>

@@ -54,10 +54,10 @@ export class DocumentPreview implements OnInit {
       this.fileName = document!.name;
       this.fileType = document!.type || 'application/octet-stream';
 
-      // Then get the file content
+      // file content
       const base64Data = await this.documentService.preview(documentId).toPromise();
 
-      // Create safe URL for preview
+      // URL for preview
       this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
         `data:${this.fileType};base64,${base64Data}`
       );
@@ -127,8 +127,6 @@ isSupportedType(): boolean {
     a.download = fileName;
     document.body.appendChild(a);
     a.click();
-
-    // Cleanup
     setTimeout(() => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
@@ -193,10 +191,8 @@ isSupportedType(): boolean {
      retryPreview(): void {
     this.error = '';
     this.isLoading = true;
-    // Add retry logic here
     setTimeout(() => {
       this.isLoading = false;
-      // Simulate retry result
     }, 2000);
   }
 }
