@@ -1,0 +1,24 @@
+<div class="modal-overlay" [class.show]="showModal" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Share Link</h3>
+      <button class="modal-close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Anyone with the link can view this item.</p>
+      <div class="share-link-container">
+        <input type="text" readonly [value]="shareLink" class="share-link-input" #shareLinkInput>
+        <button class="copy-btn" (click)="copyLink()">
+          <i class="fas" [class.fa-copy]="!linkCopied" [class.fa-check]="linkCopied"></i>
+          <span>{{ linkCopied ? 'Copied!' : 'Copy' }}</span>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger text-light" (click)="onDelete()">Delete Link</button>
+      <button class="btn btn-secondary" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>

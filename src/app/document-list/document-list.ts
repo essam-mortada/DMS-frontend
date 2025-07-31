@@ -15,10 +15,12 @@ import { RouterModule } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
-
+import { ShareModal } from '../share-modal/share-modal';
+import { SharingService } from '../services/sharing';
+import { SharePermission } from '../models/share-permission.model';
 @Component({
   selector: 'app-document-list',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ShareModal],
   templateUrl: './document-list.html',
   styleUrl: './document-list.css',
 })
@@ -38,11 +40,15 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   selectedDateRange = ""
   activeFiltersCount = 0
 
+   showShareModal = false;
+  currentShareLink = '';
+  selectedDocument: Document | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
     private snackBar: MatSnackBar,
-    private documentService: DocumentService
+    private documentService: DocumentService,
+      private sharingService: SharingService,
   ) {}
 
   ngOnInit(): void {
@@ -228,5 +234,52 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+
+
+  openShareModal(document: Document): void {
+    this.selectedDocument = document;
+    if (document.linkSharingEnabled && document.shareLinkToken) {
+      this.currentShareLink = `${window.location.origin}/public/share/${document.shareLinkToken}`;
+      this.showShareModal = true;
+    } else {
+      this.sharingService.createDocumentShareLink(document.id, SharePermission.VIEW).subscribe({
+        next: (token) => {
+          const updatedDocument = { ...document, linkSharingEnabled: true, shareLinkToken: token };
+          this.documents = this.documents.map(d => d.id === document.id ? updatedDocument : d);
+          this.currentShareLink = `${window.location.origin}/public/share/${token}`;
+          this.showShareModal = true;
+          this.snackBar.open('Share link created', 'Close', { duration: 3000 });
+        },
+        error: (err) => {
+          console.error('Error creating share link:', err);
+          this.snackBar.open('Failed to create share link', 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
+        }
+      });
+    }
+  }
+
+  closeShareModal(): void {
+    this.showShareModal = false;
+    this.currentShareLink = '';
+    this.selectedDocument = null;
+  }
+
+  deleteShareLink(): void {
+    if (!this.selectedDocument) return;
+
+    this.sharingService.deleteDocumentShareLink(this.selectedDocument.id).subscribe({
+      next: () => {
+        const updatedDocument = { ...this.selectedDocument!, linkSharingEnabled: false };
+        this.documents = this.documents.map(d => d.id === this.selectedDocument!.id ? updatedDocument : d);
+        this.snackBar.open('Share link deleted', 'Close', { duration: 3000 });
+        this.closeShareModal();
+      },
+      error: (err) => {
+        console.error('Error deleting share link:', err);
+        this.snackBar.open('Failed to delete share link', 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
+      }
+    });
   }
 }

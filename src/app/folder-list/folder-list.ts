@@ -7,9 +7,13 @@ import { FolderBreadcrumbs } from "../folder-breadcrumbs/folder-breadcrumbs";
 import { FolderCreateModal } from "../folder-create-modal/folder-create-modal";
 import { DocumentUploadComponent } from '../upload-modal/upload-modal';
 
+import { ShareModal } from '../share-modal/share-modal';
+import { SharingService } from '../services/sharing';
+import { SharePermission } from '../models/share-permission.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-folder-list',
-  imports: [CommonModule, RouterModule, FolderCreateModal],
+  imports: [CommonModule, RouterModule, FolderCreateModal, ShareModal],
   templateUrl: './folder-list.html',
   styleUrl: './folder-list.css'
 })
@@ -29,14 +33,20 @@ get workspaceId(): string {
 
   folders: Folder[] = [];
   loading = false;
-  snackBar: any;
   openDropdownId: string | null = null;
  showCreateModal = false;
   showEditModal = false;
  @Input() selectedFolder: any = null;
-
-  constructor(private folderService: FolderService, private route: ActivatedRoute,private router: Router) {}
-
+ showShareModal = false;
+  currentShareLink = '';
+  selectedFolderForSharing: Folder | null = null;
+ constructor(
+    private folderService: FolderService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private sharingService: SharingService,
+    private snackBar: MatSnackBar
+  ) {}
 ngOnInit() {
   this.route.params.subscribe(params => {
     this.workspaceId = params['workspaceId'];
@@ -154,6 +164,53 @@ handleFolderCreated(folderData: {
     error: (err) => console.error('Creation failed', err)
   });
 }
+
+
+
+openShareModal(folder: Folder): void {
+    this.selectedFolderForSharing = folder;
+    if (folder.linkSharingEnabled && folder.shareLinkToken) {
+      this.currentShareLink = `${window.location.origin}/public/share/${folder.shareLinkToken}`;
+      this.showShareModal = true;
+    } else {
+      this.sharingService.createFolderShareLink(folder.id, SharePermission.VIEW).subscribe({
+        next: (token) => {
+          const updatedFolder = { ...folder, linkSharingEnabled: true, shareLinkToken: token };
+          this.folders = this.folders.map(f => f.id === folder.id ? updatedFolder : f);
+          this.currentShareLink = `${window.location.origin}/public/share/${token}`;
+          this.showShareModal = true;
+          this.snackBar.open('Share link created', 'Close', { duration: 3000 });
+        },
+        error: (err) => {
+          console.error('Error creating share link:', err);
+          this.snackBar.open('Failed to create share link', 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
+        }
+      });
+    }
+  }
+
+  closeShareModal(): void {
+    this.showShareModal = false;
+    this.currentShareLink = '';
+    this.selectedFolderForSharing = null;
+  }
+
+  deleteShareLink(): void {
+    if (!this.selectedFolderForSharing) return;
+
+    this.sharingService.deleteFolderShareLink(this.selectedFolderForSharing.id).subscribe({
+      next: () => {
+        const updatedFolder = { ...this.selectedFolderForSharing!, linkSharingEnabled: false };
+        this.folders = this.folders.map(f => f.id === this.selectedFolderForSharing!.id ? updatedFolder : f);
+        this.snackBar.open('Share link deleted', 'Close', { duration: 3000 });
+        this.closeShareModal();
+      },
+      error: (err) => {
+        console.error('Error deleting share link:', err);
+        this.snackBar.open('Failed to delete share link', 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
+      }
+    });
+  }
 }
 
 

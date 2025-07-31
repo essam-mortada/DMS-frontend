@@ -6,6 +6,8 @@ import { Document } from '../models/document.model';
 @Injectable({ providedIn: 'root' })
 export class DocumentService {
   private baseUrl = 'http://localhost:8081/api/documents';
+  private publicShareUrl = 'http://localhost:8081/public/share';
+
   private documentsSubject = new BehaviorSubject<Document[]>([]);
   documents$ = this.documentsSubject.asObservable();
 
@@ -139,5 +141,17 @@ export class DocumentService {
 
   updateMetadata(id: string, data: Partial<Document>) {
     return this.http.put<Document>(`${this.baseUrl}/${id}/metadata`, data);
+  }
+
+   publicPreview(token: string): Observable<Blob> {
+    return this.http.get(`${this.publicShareUrl}/preview/${token}`, {
+      responseType: 'blob',
+    });
+  }
+
+  publicDownload(token: string): Observable<Blob> {
+    return this.http.get(`${this.publicShareUrl}/download/${token}`, {
+      responseType: 'blob',
+    });
   }
 }

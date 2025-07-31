@@ -43,6 +43,13 @@
               <i class="fas fa-edit me-2"></i>
               Edit
             </button>
+            <!-- <button
+              class="dropdown-item"
+              (click)="openShareModal(folder); $event.stopPropagation()"
+            >
+              <i class="fas fa-share-alt me-2"></i>
+              Share
+            </button> -->
             <button
               class="dropdown-item danger"
               (click)="deleteFolder(folder.id); $event.stopPropagation()"
@@ -99,3 +106,10 @@
   (closeModal)="closeModals()"
   (folderCreated)="onEdit($event)">
 </app-folder-create-modal>
+
+<app-share-modal
+  [showModal]="showShareModal"
+  [shareLink]="currentShareLink"
+  (closeModal)="closeShareModal()"
+  (deleteLink)="deleteShareLink()">
+</app-share-modal>

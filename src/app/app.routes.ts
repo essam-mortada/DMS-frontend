@@ -9,10 +9,12 @@ import { FolderList } from './folder-list/folder-list';
 import { WorkspaceDetails } from './workspace-details/workspace-details';
 import { DocumentPreview } from './document-preview/document-preview';
 import { FolderDetails } from './folder-details/folder-details';
+import { PublicShareComponent } from './public-share/public-share';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+    { path: 'public/share/:token', component: PublicShareComponent },
   { path: '', component: DashboardRedirect ,
     pathMatch: 'full',
     canActivate: [AuthGuard],

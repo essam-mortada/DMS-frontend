@@ -1,3 +1,5 @@
+import { SharePermission } from './share-permission.model';
+
 export interface Document {
   id: string;
   name: string;
@@ -11,4 +13,8 @@ export interface Document {
   deleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+
+  linkSharingEnabled?: boolean;
+  shareLinkPermission?: SharePermission;
+  shareLinkToken?: string;
 }

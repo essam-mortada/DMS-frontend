@@ -785,5 +785,15 @@
 
 /* Click outside handler */
 .sort-dropdown.open::before {
-  display: none; /* Remove this overlay as it's not needed with proper z-index */
+  display: none;
+}
+
+.share-btn{
+  background:none;
+  color:yellowgreen;
+}
+
+.share-btn:hover{
+  background-color: yellowgreen;
+  color: white;
 }

@@ -1,0 +1,225 @@
+<div class="public-share-container">
+  <!-- Enhanced Header -->
+  <header class="public-header">
+    <div class="header-content">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <div class="logo-icon">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-name">DocuManager</h1>
+            <span class="brand-tagline">Shared Document</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="theme-toggle-wrapper">
+          <app-theme-toggle></app-theme-toggle>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="content-state loading-state">
+        <div class="state-card">
+          <div class="loading-spinner">
+            <div class="spinner-ring"></div>
+          </div>
+          <h3 class="state-title">Loading Shared Item</h3>
+          <p class="state-description">Please wait while we prepare your document...</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="content-state error-state">
+        <div class="state-card">
+          <div class="state-icon error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3 class="state-title">Access Denied</h3>
+          <p class="state-description">{{ error }}</p>
+          <div class="state-actions">
+            <a [routerLink]="['/dashboard']" class="btn btn-primary">
+              <i class="fas fa-home me-2"></i>
+              Go to Homepage
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Content -->
+      <ng-container *ngIf="!loading && !error && sharedItem">
+        <div *ngIf="isDocument(sharedItem)" class="document-share-content">
+          <!-- Document Header -->
+          <div class="document-header">
+            <div class="document-info">
+              <div class="file-icon-large" [class]="getFileIconClass(sharedItem)">
+                <i class="fas" [class]="getFileIcon(sharedItem)"></i>
+              </div>
+              <div class="document-details">
+                <h2 class="document-title">{{ sharedItem.name }}</h2>
+                <div class="document-meta">
+                  <span class="file-type-badge" [class]="getFileTypeBadgeClass(sharedItem)">
+                    {{ getFileTypeDisplay(sharedItem) }}
+                  </span>
+                  <span class="file-size" *ngIf="sharedItem.size">
+                    <i class="fas fa-hdd me-1"></i>
+                    {{ formatFileSize(sharedItem.size) }}
+                  </span>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="document-actions">
+              <button
+                (click)="downloadDocument(sharedItem)"
+                class="btn btn-primary download-btn"
+                [disabled]="downloading"
+              >
+                <i class="fas" [class.fa-download]="!downloading" [class.fa-spinner]="downloading" [class.fa-spin]="downloading"></i>
+                {{ downloading ? 'Downloading...' : 'Download' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Document Preview -->
+          <div class="document-preview">
+            <div class="preview-header">
+              <h3 class="preview-title">
+                <i class="fas fa-eye me-2"></i>
+                Document Preview
+              </h3>
+              <div class="preview-controls" *ngIf="previewUrl">
+                <button class="control-btn" (click)="toggleFullscreen()" title="Fullscreen">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="preview-content" #previewContainer>
+              <ng-container *ngIf="previewUrl; else noPreview">
+                <!-- Image Preview -->
+                <div *ngIf="isImageType(sharedItem)" class="image-preview">
+                  <div class="image-container">
+                    <img
+                      [src]="previewUrl"
+                      alt="Document preview"
+                      class="preview-image"
+                      (load)="onImageLoad()"
+                      (error)="onImageError()"
+                    >
+                  </div>
+                </div>
+
+                <!-- PDF Preview -->
+                <div *ngIf="isPdfType(sharedItem)" class="pdf-preview">
+                  <iframe
+                    [src]="previewUrl"
+                    class="pdf-iframe"
+                    title="PDF Preview"
+                    (load)="onPdfLoad()"
+                    (error)="onPdfError()">
+                  </iframe>
+                </div>
+
+                <!-- Video Preview -->
+                <div *ngIf="isVideoType(sharedItem)" class="video-preview">
+                  <video controls class="preview-video" preload="metadata">
+                    <source [src]="previewUrl" [type]="sharedItem.type">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+
+                <!-- Audio Preview -->
+                <div *ngIf="isAudioType(sharedItem)" class="audio-preview">
+                  <div class="audio-player-container">
+                    <div class="audio-icon">
+                      <i class="fas fa-music"></i>
+                    </div>
+                    <div class="audio-info">
+                      <h4 class="audio-title">{{ sharedItem.name }}</h4>
+                      <p class="audio-description">Audio File</p>
+                    </div>
+                    <audio controls class="preview-audio">
+                      <source [src]="previewUrl" [type]="sharedItem.type">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                </div>
+
+                <!-- Text/Code Preview -->
+                <div *ngIf="isTextType(sharedItem)" class="text-preview">
+                  <div class="text-container">
+                    <pre class="text-content">{{ textContent }}</pre>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- No Preview Template -->
+              <ng-template #noPreview>
+                <div class="no-preview-state">
+                  <div class="no-preview-icon">
+                    <i class="fas fa-file-alt"></i>
+                  </div>
+                  <h4 class="no-preview-title">Preview Not Available</h4>
+                  <p class="no-preview-description">
+                    Preview is not supported for {{ getFileTypeDisplay(sharedItem) }} files
+                  </p>
+                  <p class="no-preview-hint">Download the file to view its contents</p>
+                  <button (click)="downloadDocument(sharedItem)" class="btn btn-outline-primary">
+                    <i class="fas fa-download me-2"></i>
+                    Download File
+                  </button>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder Content -->
+        <div *ngIf="!isDocument(sharedItem)" class="folder-share-content">
+          <div class="folder-header">
+            <div class="folder-info">
+              <div class="folder-icon-large">
+                <i class="fas fa-folder"></i>
+              </div>
+              <div class="folder-details">
+                <h2 class="folder-title">{{ sharedItem.name }}</h2>
+                <p class="folder-description">Shared Folder</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="folder-message">
+            <div class="message-icon">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="message-content">
+              <h4>Folder Access Required</h4>
+              <p>This is a shared folder. To view its contents, you need to be a member of the workspace.</p>
+              <p>Contact the folder owner for access permissions.</p>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="public-footer">
+    <div class="footer-content">
+      <p class="footer-text">
+        <i class="fas fa-shield-alt me-2"></i>
+        Securely shared via DocuManager
+      </p>
+
+    </div>
+  </footer>
+</div>
