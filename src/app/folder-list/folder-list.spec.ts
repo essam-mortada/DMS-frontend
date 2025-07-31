@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FolderList } from './folder-list';
 
 describe('FolderList', () => {
@@ -8,7 +8,7 @@ describe('FolderList', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FolderList]
+      imports: [FolderList, HttpClientTestingModule]
     })
     .compileComponents();
 

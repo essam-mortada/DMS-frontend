@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { DashboardRedirect } from './dashboard-redirect';
 
 describe('DashboardRedirect', () => {
@@ -8,7 +9,7 @@ describe('DashboardRedirect', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardRedirect]
+      imports: [DashboardRedirect, HttpClientTestingModule, RouterTestingModule]
     })
     .compileComponents();
 

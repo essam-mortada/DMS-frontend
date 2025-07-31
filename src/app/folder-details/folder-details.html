@@ -43,13 +43,6 @@
           </div>
         </div>
 
-        <div class="stat-item">
-          <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-          <div class="stat-content">
-            <span class="stat-number">{{ documentCount || 0 }}</span>
-            <span class="stat-label">Documents</span>
-          </div>
-        </div>
 
         <div class="stat-item">
           <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
@@ -161,9 +154,7 @@
         <app-document-list
         [workspaceId]="workspaceId"
         [folderId]="currentFolderId"
-        [searchQuery]="searchQuery"
-        (documentAdded)="onDocumentAdded($event)"
-        (documentDeleted)="onDocumentDeleted($event)">
+        [searchQuery]="searchQuery">
       </app-document-list>
 
       </div>
@@ -273,7 +264,6 @@
           <app-document-upload
           [workspaceId]="workspaceId"
           [parentFolderId]="currentFolderId"
-          (documentUploaded)="onDocumentUploaded($event)"
           (close)="closeUploadModal()">
         </app-document-upload>
         </div>

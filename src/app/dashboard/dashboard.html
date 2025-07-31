@@ -68,166 +68,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Enhanced Stats Cards -->
-      <div class="row g-4 mb-5">
-        <div class="col-xl-3 col-md-6">
-          <div class="stats-card stats-card-primary">
-            <div class="stats-card-body">
-              <div class="stats-icon">
-                <i class="fas fa-folder"></i>
-              </div>
-              <div class="stats-content">
-                <h3 class="stats-number">{{ workspaces.length }}</h3>
-                <p class="stats-label">Total Workspaces</p>
-                <div class="stats-trend">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6">
-          <div class="stats-card stats-card-success">
-            <div class="stats-card-body">
-              <div class="stats-icon">
-                <i class="fas fa-file-alt"></i>
-              </div>
-              <div class="stats-content">
-                <h3 class="stats-number">{{ documents.length }}</h3>
-                <p class="stats-label">Total Documents</p>
-                <div class="stats-trend">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-    <div class="col-xl-3 col-md-6">
-  <div class="stats-card stats-card-warning">
-    <div class="stats-card-body">
-      <div class="stats-icon">
-        <i class="fas fa-cloud"></i>
-      </div>
-      <div class="stats-content">
-        <h3 class="stats-number">
-          {{ getSizeCount() }}
-        </h3>
-        <p class="stats-label">Storage Used</p>
-        <div class="stats-progress">
-          <div class="progress">
-            <div
-              class="progress-bar"
-              role="progressbar"
-              [style.width.%]="getStorageUsedPercentage()"
-              [attr.aria-valuenow]="getStorageUsedPercentage()"
-              aria-valuemin="0"
-              aria-valuemax="100"
-            ></div>
-          </div>
-          <small>{{ getSizeCount() }} of 40GB</small>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-        <div class="col-xl-3 col-md-6">
-          <div class="stats-card stats-card-info">
-            <div class="stats-card-body">
-              <div class="stats-icon">
-                <i class="fas fa-upload"></i>
-              </div>
-              <div class="stats-content">
-                <h3 class="stats-number">{{getRecentUploadsThisWeek()}}</h3>
-                <p class="stats-label">Recent Uploads</p>
-                <div class="stats-trend">
-                  <span class="text-muted">This week</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Activity -->
-      <div class="row">
-        <div class="col-lg-8">
-          <div class="content-card">
-            <div class="card-header">
-              <h5 class="card-title">
-                <i class="fas fa-clock me-2"></i>
-                Recent Documents
-              </h5>
-
-            </div>
-            <div class="card-body">
-              <div class="recent-documents">
-                <div *ngFor="let document of documents.slice(0, 5)" class="document-item">
-                  <div class="document-icon">
-                    <i class="fas fa-file-pdf" [ngClass]="getFileIconClass(document.type)"></i>
-                  </div>
-                  <div class="document-info">
-                    <h6 class="document-name">{{ document.name }}</h6>
-                    <p class="document-meta">
-                      <span class="badge badge-type">{{ getFileType(document.type) }}</span>
-                      <span class="text-muted ms-2">{{ document.createdAt | date:'short' }}</span>
-                    </p>
-                  </div>
-                  <div class="document-actions">
-                    <button class="btn btn-sm btn-outline-primary" (click)="downloadDocument(document.id!, document.name, document.type)">
-                      <i class="fas fa-download"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4">
-          <div class="content-card">
-            <div class="card-header">
-              <h5 class="card-title">
-                <i class="fas fa-chart-bar me-2"></i>
-                Quick Stats
-              </h5>
-            </div>
-            <div class="card-body">
-              <div class="quick-stats">
-                <div class="quick-stat-item">
-                  <div class="d-flex justify-content-between">
-                    <span>PDF Documents</span>
-                    <strong>{{ getPDFCount() }}</strong>
-                  </div>
-                  <div class="progress mt-2">
-                    <div class="progress-bar bg-danger" [style.width.%]="(getPDFCount() / documents.length) * 100"></div>
-                  </div>
-                </div>
-                <div class="quick-stat-item">
-                  <div class="d-flex justify-content-between">
-                    <span>Word Documents</span>
-                    <strong>{{ getWordCount() }}</strong>
-                  </div>
-                  <div class="progress mt-2">
-                    <div class="progress-bar bg-primary" [style.width.%]="(getWordCount() / documents.length) * 100"></div>
-                  </div>
-                </div>
-                <div class="quick-stat-item">
-                  <div class="d-flex justify-content-between">
-                    <span>Images</span>
-                    <strong>{{ getImageCount() }}</strong>
-                  </div>
-                  <div class="progress mt-2">
-                    <div class="progress-bar bg-success" [style.width.%]="(getImageCount() / documents.length) * 100"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Workspaces Tab -->
@@ -373,13 +213,8 @@
     </div> -->
 <div [hidden]="activeTab !== 'documents'" class="tab-content-wrapper mb-5">
     <app-document-list
-  [workspaceId]="''"
-  [searchQuery]="searchQuery"
-  [documents]="filteredDocuments"
-  (documentAdded)="onDocumentAdded($event)"
-  (documentDeleted)="onDocumentDeleted($event)"
-  [refreshTrigger]="refreshTrigger"
-  >
+      [searchQuery]="searchQuery"
+    >
 </app-document-list>
       </div>
   </div>
@@ -395,5 +230,4 @@
 <app-document-upload
   *ngIf="showUploadModal"
   (close)="closeUploadModal()"
-  (documentUploaded)="refreshDocuments()"
 ></app-document-upload>
