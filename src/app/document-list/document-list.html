@@ -210,11 +210,7 @@
             <i class="fas fa-file-alt"></i>
           </div>
           <h4>No documents found</h4>
-          <p>{{ hasActiveFilters() ? 'Try adjusting your filters or' : '' }} Upload your first document to get started</p>
-          <button class="btn btn-primary" *ngIf="hasActiveFilters()" (click)="clearAllFilters()">
-            <i class="fas fa-times me-2"></i>
-            Clear Filters
-          </button>
+          <p>Upload your first document to get started</p>
         </div>
       }
     </div>

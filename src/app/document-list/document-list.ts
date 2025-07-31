@@ -9,13 +9,11 @@ import {
 } from '@angular/core';
 import { Document } from '../models/document.model';
 import { DocumentService } from '../services/document';
-import { FolderService } from '../services/folder-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SearchService } from '../services/search-service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -30,7 +28,6 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   @Input() searchQuery: string = '';
 
   documents: Document[] = [];
-  filteredDocuments: Document[] = [];
   loading = false;
   viewMode: "grid" | "list" = "grid";
   selectedSort: string = 'name';
@@ -42,83 +39,38 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   activeFiltersCount = 0
 
   private destroy$ = new Subject<void>();
-  private documentsSub!: Subscription;
 
   constructor(
     private snackBar: MatSnackBar,
-    private folderService: FolderService,
-    private searchService: SearchService,
     private documentService: DocumentService
   ) {}
 
   ngOnInit(): void {
-    this.documentsSub = this.documentService.documents$.pipe(
+    this.documentService.documents$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(documents => {
       this.documents = documents;
-      this.filterAndSortDocuments();
     });
 
     this.fetchDocuments();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['workspaceId'] || changes['folderId']) {
+    if (changes['workspaceId'] || changes['folderId'] || changes['searchQuery']) {
       this.fetchDocuments();
-    }
-    if (changes['searchQuery']) {
-      this.filterAndSortDocuments();
     }
   }
 
   fetchDocuments(): void {
+    const keyword = this.searchQuery ? this.searchQuery : undefined;
+    const sort = this.selectedSort ? this.selectedSort : undefined;
+
     if (this.folderId) {
-      this.documentService.fetchDocumentsByFolder(this.folderId);
+      this.documentService.fetchDocumentsByFolder(this.folderId, sort, keyword);
     } else if (this.workspaceId) {
-      this.documentService.fetchDocumentsByWorkspace(this.workspaceId);
+      this.documentService.fetchDocumentsByWorkspace(this.workspaceId, sort, keyword);
     } else {
-      this.documentService.fetchDocumentsByUser();
-    }
-  }
-
-  filterAndSortDocuments(): void {
-    let filtered = [...this.documents];
-
-    if (this.searchQuery) {
-      const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(doc =>
-        doc.name.toLowerCase().includes(query) ||
-        (doc.type && doc.type.toLowerCase().includes(query))
-      );
-    }
-
-    if (this.selectedFileTypes.length > 0) {
-      filtered = filtered.filter(doc => this.selectedFileTypes.includes(doc.type));
-    }
-
-    // Date range filtering would be implemented here
-
-    this.filteredDocuments = this.sortDocuments(filtered);
-  }
-
-  sortDocuments(documents: Document[]): Document[] {
-    switch (this.selectedSort) {
-      case 'name':
-        return documents.sort((a, b) => a.name.localeCompare(b.name));
-      case 'namedesc':
-        return documents.sort((a, b) => b.name.localeCompare(a.name));
-      case 'date':
-        return documents.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateB - dateA;
-        });
-      case 'size':
-        return documents.sort((a, b) => (b.size || 0) - (a.size || 0));
-      case 'type':
-        return documents.sort((a, b) => (a.type || '').localeCompare(b.type || ''));
-      default:
-        return documents;
+      this.documentService.fetchDocumentsByUser(sort, keyword);
     }
   }
 
@@ -197,7 +149,7 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   selectSort(sortType: string): void {
     this.selectedSort = sortType
     this.showSortDropdown = false
-    this.filterAndSortDocuments();
+    this.fetchDocuments();
   }
 
   getSortDisplayName(): string {
@@ -210,35 +162,14 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   resetSort(): void {
     this.selectedSort = "name"
     this.showSortDropdown = false
-    this.filterAndSortDocuments();
-  }
-
-  toggleFilters(): void {
-    this.showFilters = !this.showFilters
-  }
-
-  toggleFileType(fileType: string): void {
-    const index = this.selectedFileTypes.indexOf(fileType)
-    if (index > -1) {
-      this.selectedFileTypes.splice(index, 1)
-    } else {
-      this.selectedFileTypes.push(fileType)
-    }
-    this.updateActiveFiltersCount()
-    this.filterAndSortDocuments();
-  }
-
-  setDateRange(range: string): void {
-    this.selectedDateRange = this.selectedDateRange === range ? "" : range
-    this.updateActiveFiltersCount()
-    this.filterAndSortDocuments();
+    this.fetchDocuments();
   }
 
   clearAllFilters(): void {
     this.selectedFileTypes = []
     this.selectedDateRange = ""
     this.updateActiveFiltersCount()
-    this.filterAndSortDocuments();
+    this.fetchDocuments();
   }
 
   hasActiveFilters(): boolean {

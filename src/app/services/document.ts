@@ -25,7 +25,6 @@ export class DocumentService {
 
     return this.http.post<Document>(`${this.baseUrl}/upload`, formData).pipe(
       tap(() => {
-        // After upload, refresh the list of documents
         if (folderId) {
           this.fetchDocumentsByFolder(folderId);
         } else if (workspaceId) {
@@ -37,23 +36,31 @@ export class DocumentService {
     );
   }
 
-  fetchDocumentsByWorkspace(workspaceId: string): void {
-    this.http.get<Document[]>(`${this.baseUrl}/workspaces/${workspaceId}/documents`)
+  fetchDocumentsByWorkspace(workspaceId: string, sort?: string, keyword?: string): void {
+    let params = new HttpParams();
+    if (sort) params = params.set('sort', sort);
+    if (keyword) params = params.set('keyword', keyword);
+
+    this.http.get<Document[]>(`${this.baseUrl}/workspaces/${workspaceId}/documents`, { params })
       .subscribe(documents => this.documentsSubject.next(documents));
   }
 
-  fetchDocumentsByUser(): void {
-    this.http.get<Document[]>(`${this.baseUrl}/users/documents`)
+  fetchDocumentsByUser(sort?: string, keyword?: string): void {
+    let params = new HttpParams();
+    if (sort) params = params.set('sort', sort);
+    if (keyword) params = params.set('keyword', keyword);
+
+    this.http.get<Document[]>(`${this.baseUrl}/users/documents`, { params })
       .subscribe(documents => this.documentsSubject.next(documents));
   }
 
-  fetchDocumentsByFolder(folderId: string): void {
-    this.getFolderDocuments(folderId)
-      .subscribe(documents => this.documentsSubject.next(documents));
-  }
+  fetchDocumentsByFolder(folderId: string, sort?: string, keyword?: string): void {
+    let params = new HttpParams();
+    if (sort) params = params.set('sort', sort);
+    if (keyword) params = params.set('keyword', keyword);
 
-  getFolderDocuments(folderId: string): Observable<Document[]> {
-    return this.http.get<Document[]>(`${this.baseUrl}/folder/${folderId}/documents`);
+    this.http.get<Document[]>(`${this.baseUrl}/folder/${folderId}/documents`, { params })
+      .subscribe(documents => this.documentsSubject.next(documents));
   }
 
   download(id: string): Observable<Blob> {
@@ -70,35 +77,11 @@ export class DocumentService {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
-  searchDocuments(keyword: string): Observable<Document[]> {
-    return this.http.get<Document[]>(`${this.baseUrl}/search?keyword=${encodeURIComponent(keyword)}`);
-  }
-
-  searchDocumentsByWorkspace(workspaceId: string, keyword: string) {
-    return this.http.get<Document[]>(`${this.baseUrl}/workspace/${workspaceId}/search`, {
-      params: { keyword }
-    });
-  }
-
-  searchDocumentsByFolder(folderId: string, keyword: string) {
-    return this.http.get<Document[]>(`${this.baseUrl}/folder/${folderId}/search`, {
-      params: { keyword }
-    });
-  }
-
   getMetadata(id: string): Observable<Document> {
     return this.http.get<Document>(`${this.baseUrl}/${id}/metadata`);
   }
 
   updateMetadata(id: string, data: Partial<Document>) {
     return this.http.put<Document>(`${this.baseUrl}/${id}/metadata`, data);
-  }
-
-  getSortedDocuments(workspaceId: string, sort: string) {
-    const params = new HttpParams()
-      .set('workspaceId', workspaceId)
-      .set('sort', sort);
-
-    return this.http.get<Document[]>(`${this.baseUrl}/sort`, { params });
   }
 }
