@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DocumentList } from '../document-list/document-list';
 import { Header } from "../header/header";
 import { DocumentService } from '../services/document';
+import { SearchService } from '../services/search-service';
 type DocumentUploadEvent = {
   status: 'success' | 'error';
   document?: Document;
@@ -67,11 +68,19 @@ export class FolderDetails implements OnInit, OnChanges {
     private router: Router,
     private snackBar: MatSnackBar
     , private documentService: DocumentService,
+    private searchService:SearchService
 
   ) {}
+  ngOnChanges(changes: SimpleChanges): void {
+    throw new Error('Method not implemented.');
+  }
 
   ngOnInit(): void {
-
+this.subscription.add(
+      this.searchService.searchTerm$.subscribe(term => {
+        this.searchQuery = term;
+      })
+    );
     this.route.params.subscribe((params) => {
       this.currentFolderId = params['folderId'] || '';
       this.workspaceId = params['workspaceId'] || '';

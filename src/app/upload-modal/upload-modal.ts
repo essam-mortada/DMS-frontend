@@ -66,7 +66,7 @@ upload() {
   this.documentService.upload(this.selectedFile, this.selectedWorkspaceId, folderId).subscribe({
     next: () => {
       this.close.emit();
-      this.documentService.updateData.next(true);
+      //this.documentService.updateData.next(true);
       //this.dashboard.refreshDocuments();
     },
     error: (err) => {

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, input, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FolderService } from '../services/folder-service';
 import { WorkspaceService } from '../services/workspaceService';
@@ -16,18 +16,17 @@ import { Document } from '../models/document.model';
 import { DocumentUploadComponent } from "../upload-modal/upload-modal";
 import { ThemeService } from '../services/theme.service';
 import { Subscription } from 'rxjs';
+import { SearchService } from '../services/search-service';
+
 declare var bootstrap: any;
 @Component({
   selector: 'app-workspace-details',
-  imports: [CommonModule,
-    RouterModule,
-    FolderBreadcrumbs,
-    FolderList,
-    DocumentList, DocumentUploadComponent, Header],
+   imports: [CommonModule, RouterModule, FolderBreadcrumbs, FolderList, DocumentList, DocumentUploadComponent, Header],
+
   templateUrl: './workspace-details.html',
   styleUrl: './workspace-details.css'
 })
-export class WorkspaceDetails {
+export class WorkspaceDetails implements OnInit, OnDestroy {
   showUploadModal: boolean = false;
   @Input() searchQuery: string = '';
 
@@ -49,12 +48,19 @@ export class WorkspaceDetails {
     , private snackBar: MatSnackBar
     , private documentService: DocumentService,
     private router: Router,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+        private searchService: SearchService
   ) {}
 
 
 
   ngOnInit(): void {
+
+    this.subscription.add(
+      this.searchService.searchTerm$.subscribe(term => {
+        this.searchQuery = term;
+      })
+    );
 this.subscription.add(
       this.themeService.darkMode$.subscribe((isDark) => {
         this.isDarkMode = isDark
@@ -66,8 +72,8 @@ this.subscription.add(
 
     this.loadWorkspace();
     this.loadFolderPath();
-    this.getDocuments();
-    this.refreshDocuments();
+    // this.getDocuments();
+    // this.refreshDocuments();
 
   }
 
@@ -139,5 +145,10 @@ onCreateFolder(folder: { name: string; workspaceId: string; parentFolderId: stri
   closeUploadModal() {
     this.showUploadModal = false;
   }
+
+   ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
 
 }
