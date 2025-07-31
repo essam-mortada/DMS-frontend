@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CreateWorkspaceModal } from './create-workspace-modal';
 
 describe('CreateWorkspaceModal', () => {
@@ -8,7 +8,7 @@ describe('CreateWorkspaceModal', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateWorkspaceModal]
+      imports: [CreateWorkspaceModal, HttpClientTestingModule]
     })
     .compileComponents();
 

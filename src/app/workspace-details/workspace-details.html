@@ -48,10 +48,7 @@
       <app-document-list
         [workspaceId]="workspaceId"
         [folderId]="currentFolderId!"
-        [searchQuery]="searchQuery"
-
-        (download)="downloadDocument($event.id!, $event.name, $event.type)"
-        (delete)="deleteDocument($event)">
+        [searchQuery]="searchQuery">
       </app-document-list>
     </div>
   </div>
@@ -74,7 +71,6 @@
             <app-document-upload
               [workspaceId]="workspaceId"
               [folderId]="currentFolderId"
-              (documentUploaded)="onDocumentUploaded()"
               (close)="closeUploadModal()">
             </app-document-upload>
           </div>

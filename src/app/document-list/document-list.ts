@@ -39,7 +39,6 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   @Input() documents: Document[] = [];
   showUploadModal: boolean = false;
   loading = false;
-  documentService: DocumentService = new DocumentService(inject(HttpClient));
   @Output() download = new EventEmitter<Document>();
   @Output() delete = new EventEmitter<string>();
   private destroy$ = new Subject<void>();
@@ -61,15 +60,15 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
     private snackBar: MatSnackBar,
     private folderService: FolderService,
     private searchService: SearchService,
-    private DocumentService:DocumentService
-
+    private documentService: DocumentService
   ) {}
 
   ngOnInit(): void {
-    this.documentService.updateData.subscribe((res)=>{
-
-      this.getDocuments();
-    })
+    this.documentService.updateData.subscribe((res) => {
+      if (res) {
+        this.getDocuments();
+      }
+    });
         this.updateActiveFiltersCount()
     this.searchSub = this.searchService.searchTerm$
       .pipe(
