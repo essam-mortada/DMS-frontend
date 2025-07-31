@@ -36,31 +36,45 @@ export class DocumentService {
     );
   }
 
-  fetchDocumentsByWorkspace(workspaceId: string, sort?: string, keyword?: string): void {
-    let params = new HttpParams();
-    if (sort) params = params.set('sort', sort);
-    if (keyword) params = params.set('keyword', keyword);
+  private getRequest(url: string, params: HttpParams): Observable<Document[]> {
+    return this.http.get<Document[]>(url, { params });
+  }
 
-    this.http.get<Document[]>(`${this.baseUrl}/workspaces/${workspaceId}/documents`, { params })
-      .subscribe(documents => this.documentsSubject.next(documents));
+  fetchDocumentsByWorkspace(workspaceId: string, sort?: string, keyword?: string): void {
+    let request$: Observable<Document[]>;
+    if (keyword) {
+      request$ = this.getRequest(`${this.baseUrl}/workspace/${workspaceId}/search`, new HttpParams().set('keyword', keyword));
+    } else if (sort) {
+      request$ = this.getRequest(`${this.baseUrl}/sort`, new HttpParams().set('workspaceId', workspaceId).set('sort', sort));
+    } else {
+      request$ = this.getRequest(`${this.baseUrl}/workspaces/${workspaceId}/documents`, new HttpParams());
+    }
+    request$.subscribe(documents => this.documentsSubject.next(documents));
   }
 
   fetchDocumentsByUser(sort?: string, keyword?: string): void {
-    let params = new HttpParams();
-    if (sort) params = params.set('sort', sort);
-    if (keyword) params = params.set('keyword', keyword);
-
-    this.http.get<Document[]>(`${this.baseUrl}/users/documents`, { params })
-      .subscribe(documents => this.documentsSubject.next(documents));
+    let request$: Observable<Document[]>;
+    if (keyword) {
+      request$ = this.getRequest(`${this.baseUrl}/search`, new HttpParams().set('keyword', keyword));
+    } else {
+      // The backend sort endpoint requires a workspaceId, so we can't sort all user documents.
+      // This is a limitation of the backend API.
+      // For now, we will just fetch the unsorted list.
+      request$ = this.getRequest(`${this.baseUrl}/users/documents`, new HttpParams());
+    }
+    request$.subscribe(documents => this.documentsSubject.next(documents));
   }
 
   fetchDocumentsByFolder(folderId: string, sort?: string, keyword?: string): void {
-    let params = new HttpParams();
-    if (sort) params = params.set('sort', sort);
-    if (keyword) params = params.set('keyword', keyword);
-
-    this.http.get<Document[]>(`${this.baseUrl}/folder/${folderId}/documents`, { params })
-      .subscribe(documents => this.documentsSubject.next(documents));
+    let request$: Observable<Document[]>;
+    if (keyword) {
+      request$ = this.getRequest(`${this.baseUrl}/folder/${folderId}/search`, new HttpParams().set('keyword', keyword));
+    } else {
+      // The backend does not support sorting within a folder.
+      // This is a limitation of the backend API.
+      request$ = this.getRequest(`${this.baseUrl}/folder/${folderId}/documents`, new HttpParams());
+    }
+    request$.subscribe(documents => this.documentsSubject.next(documents));
   }
 
   download(id: string): Observable<Blob> {
