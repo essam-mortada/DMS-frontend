@@ -48,11 +48,12 @@ export class DocumentService {
   }
 
   fetchDocumentsByFolder(folderId: string): void {
-    // This endpoint does not exist in the original file, assuming it should be added to folderService
-    // For now, I will just clear the documents list.
-    // A proper implementation would require a new endpoint or using folderService.
-    console.warn("fetchDocumentsByFolder is not fully implemented in DocumentService");
-    this.documentsSubject.next([]);
+    this.getFolderDocuments(folderId)
+      .subscribe(documents => this.documentsSubject.next(documents));
+  }
+
+  getFolderDocuments(folderId: string): Observable<Document[]> {
+    return this.http.get<Document[]>(`${this.baseUrl}/folder/${folderId}/documents`);
   }
 
   download(id: string): Observable<Blob> {
