@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { WorkspaceList } from '../workspace-list/workspace-list';
 import { CreateWorkspaceModal } from '../create-workspace-modal/create-workspace-modal';
 import { Header } from '../header/header';
@@ -15,21 +15,31 @@ import { Subscription } from 'rxjs';
 import { ThemeService } from '../services/theme.service';
 import { ThemeToggleComponent } from "../theme-toggle/theme-toggle";
 import { AuthService } from '../services/auth';
+import { FormsModule } from '@angular/forms';
+import { SearchService } from '../services/search-service';
+import { DocumentList } from '../document-list/document-list';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [WorkspaceList, CreateWorkspaceModal, DocumentUploadComponent, CommonModule, RouterModule, ThemeToggleComponent],
+  imports: [WorkspaceList, CreateWorkspaceModal, DocumentUploadComponent, CommonModule, RouterModule, FormsModule, Header, DocumentList],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit, OnDestroy {
+export class Dashboard implements OnInit,OnChanges ,OnDestroy {
   workspaces: Workspace[] = [];
   documents: Document[] = [];
   showCreateWorkspaceModal = false;
   showUploadModal = false;
   isDarkMode = false
-
+  searchQuery: string = '';
+selectedSort: string = 'name';
+viewMode: "grid" | "list" = "grid";
+showSortDropdown = false;
+filteredDocuments: Document[] = [];
+refreshTrigger = 0;
   @ViewChild('workspaceList') workspaceList!: WorkspaceList;
+  @ViewChild('DocumentList') documentListRef?: DocumentList;
+
   documentService: DocumentService = new DocumentService(inject(HttpClient));
   authService = inject(AuthService);
   private subscription: Subscription = new Subscription()
@@ -38,8 +48,16 @@ export class Dashboard implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private workspaceService: WorkspaceService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private searchService: SearchService,
+    private cdr: ChangeDetectorRef
   ) {}
+  ngOnChanges(changes: SimpleChanges): void {
+        const documents = changes['filteredDocuments']?.currentValue;
+    if(documents){
+      this.filterDocuments();
+    }
+  }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe()
@@ -53,6 +71,8 @@ export class Dashboard implements OnInit, OnDestroy {
         console.log("Theme changed to:", isDark ? "dark" : "light")
       }),
     )
+
+
     this.loadWorkspaces();
     this.getDocuments();
     this.refreshDocuments();
@@ -79,6 +99,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   setTab(tab: 'dashboard' | 'workspaces' | 'documents') {
     this.activeTab = tab;
+     this.cdr.detectChanges();
     this.snackBar.open(`Switched to ${tab} view`, undefined, { duration: 1500 });
   }
 
@@ -109,22 +130,23 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-  getDocuments() {
-    this.snackBar.open('Loading documents...', undefined, { duration: 1500 });
-    this.documentService.getByUser().subscribe({
-      next: (data: Document[]) => {
-        this.documents = data;
-        this.snackBar.open(`${data.length} documents loaded`, 'Close', { duration: 3000 });
-      },
-      error: (error) => {
-        console.error('Error loading documents:', error);
-        this.snackBar.open('Failed to load documents', 'Close', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
+getDocuments() {
+  this.snackBar.open('Loading documents...', undefined, { duration: 1500 });
+  this.documentService.getByUser().subscribe({
+    next: (data: Document[]) => {
+      this.documents = data;
+      this.filterDocuments(); // Apply filters after loading
+      this.snackBar.open(`${data.length} documents loaded`, 'Close', { duration: 3000 });
+    },
+    error: (error) => {
+      console.error('Error loading documents:', error);
+      this.snackBar.open('Failed to load documents', 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
 
   downloadDocument(documentId: string, documentName: string, documentType?: string) {
     if (!documentId) {
@@ -167,6 +189,9 @@ export class Dashboard implements OnInit, OnDestroy {
       window.URL.revokeObjectURL(url);
     }, 100);
   }
+
+
+
 
   openUploadModal() {
     this.showUploadModal = true;
@@ -251,6 +276,7 @@ export class Dashboard implements OnInit, OnDestroy {
       'application/x-shellscript': 'sh',
       'application/x-csh': 'csh',
       'application/x-perl': 'pl',
+      'audio/mp3':'audio'
     };
     return extensionMap[mimeType.toLowerCase()] || 'bin';
   }
@@ -263,6 +289,8 @@ getFileIconClass(fileType: string): string {
   if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
   if (fileType.includes('image')) return 'fa-file-image';
+  if (fileType.includes('audio')) return 'fa-music';
+
   return 'fa-file';
 }
 
@@ -271,6 +299,8 @@ getFileType(fileType: string): string {
   if (fileType.includes('word') || fileType.includes('document')) return 'Word';
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'Excel';
   if (fileType.includes('image')) return 'Image';
+  if (fileType.includes('audio')) return 'music';
+
   return 'File';
 }
 
@@ -279,6 +309,7 @@ getFileTypeBadgeClass(fileType: string): string {
   if (fileType.includes('word') || fileType.includes('document')) return 'badge-word';
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'badge-excel';
   if (fileType.includes('image')) return 'badge-image';
+  if (fileType.includes('audio')) return 'badge-audio';
   return '';
 }
 
@@ -333,7 +364,7 @@ getStorageUsedPercentage(): number {
 
   const totalSizeInBytes = this.documents.reduce((total, doc) => total + (doc.size || 0), 0);
   const usedGB = totalSizeInBytes / (1024 ** 3);
-  const totalGB = 40; // Assuming the quota is 40GB
+  const totalGB = 40;
 
   return Math.min(100, +((usedGB / totalGB) * 100).toFixed(2));
 }
@@ -342,7 +373,7 @@ getStorageUsedPercentage(): number {
 getRecentUploadsThisWeek(): number {
   const now = new Date();
   const startOfWeek = new Date();
-  startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday as start of week
+  startOfWeek.setDate(now.getDate() - now.getDay());
   startOfWeek.setHours(0, 0, 0, 0);
 
   return this.documents.filter(doc => {
@@ -352,16 +383,104 @@ getRecentUploadsThisWeek(): number {
 }
 
 
-onSearch(): void {
-
-  console.log('Searching for:', this.searchQuery);
+  onSearch(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  this.searchQuery = input.value;
+  this.searchService.updateSearchTerm(this.searchQuery);
+  this.filterDocuments();
 }
+
+
+onDocumentAdded(newDocument: Document): void {
+  if (!document || !('id' in document) || !document.id) {
+    this.snackBar.open('Invalid document event', 'Close', { duration: 3000 });
+    return;
+  }
+  this.snackBar.open('Document added successfully!', 'Close', {
+    duration: 3000,
+    panelClass: ['success-snackbar']
+  });
+  this.refreshTrigger++; 
+}
+
+onDocumentDeleted(documentId: string): void {
+  this.documents = this.documents.filter(doc => doc.id !== documentId);
+  this.filterDocuments();
+  this.snackBar.open('Document deleted successfully', 'Close', {
+    duration: 3000,
+    panelClass: ['success-snackbar']
+  });
+}
+toggleSortDropdown(): void {
+  this.showSortDropdown = !this.showSortDropdown;
+}
+
+selectSort(sortType: string): void {
+  this.selectedSort = sortType;
+  this.showSortDropdown = false;
+  this.filterDocuments();
+}
+
+getSortDisplayName(): string {
+  const sortNames: { [key: string]: string } = {
+    name: "Name (A-Z)",
+    namedesc: "Name (Z-A)",
+    date: "Date Created",
+    size: "File Size",
+    type: "File Type",
+  };
+  return sortNames[this.selectedSort] || "Name (A-Z)";
+}
+
+setViewMode(mode: "grid" | "list"): void {
+  this.viewMode = mode;
+}
+
+private filterDocuments(): void {
+  let filtered = [...this.documents];
+
+  // Apply search filter
+  if (this.searchQuery) {
+    const query = this.searchQuery.toLowerCase();
+    filtered = filtered.filter(doc =>
+      doc.name.toLowerCase().includes(query) ||
+      (doc.type && doc.type.toLowerCase().includes(query))
+    );
+  }
+
+  // Apply sorting
+  filtered = this.sortDocuments(filtered);
+
+  this.filteredDocuments = filtered;
+}
+
+
+private sortDocuments(documents: Document[]): Document[] {
+  switch (this.selectedSort) {
+    case 'name':
+      return documents.sort((a, b) => a.name.localeCompare(b.name));
+    case 'namedesc':
+      return documents.sort((a, b) => b.name.localeCompare(a.name));
+    case 'date':
+      return documents.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+    case 'size':
+      return documents.sort((a, b) => (b.size || 0) - (a.size || 0));
+    case 'type':
+      return documents.sort((a, b) => (a.type || '').localeCompare(b.type || ''));
+    default:
+      return documents;
+  }
+}
+
+
 
 logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 
-// Add this property to your component
-searchQuery: string = '';
 }

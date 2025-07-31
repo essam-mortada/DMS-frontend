@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, input, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FolderService } from '../services/folder-service';
 import { WorkspaceService } from '../services/workspaceService';
@@ -23,12 +23,13 @@ declare var bootstrap: any;
     RouterModule,
     FolderBreadcrumbs,
     FolderList,
-     DocumentList, DocumentUploadComponent],
+    DocumentList, DocumentUploadComponent, Header],
   templateUrl: './workspace-details.html',
   styleUrl: './workspace-details.css'
 })
 export class WorkspaceDetails {
   showUploadModal: boolean = false;
+  @Input() searchQuery: string = '';
 onDocumentDeleted() {
 
   this.getDocuments();

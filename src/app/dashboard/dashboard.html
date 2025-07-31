@@ -2,39 +2,10 @@
 <div class="main-container">
   <div class="container-fluid">
     <!-- Header Section -->
-    <div class="page-header">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h1 class="page-title">
-            <i class="fas fa-folder-open text-primary me-3"></i>
-            DocuManager
-          </h1>
-          <p class="page-subtitle">Organize and manage your documents efficiently</p>
-        </div>
-        <div class="header-actions">
-          <div class="search-container me-3">
-            <i class="fas fa-search search-icon"></i>
-            <input
-              type="text"
-              class="form-control search-input"
-              placeholder="Search documents..."
-              (input)="onSearch()"
-            >
-          </div>
-          <div class="logout">
-            <button class="btn btn-outline-secondary" (click)="logout()">
-              <i class="fas fa-sign-out-alt me-2"></i>
-              Logout
-            </button>
-          </div>
-          <!-- Theme Toggle -->
-          <app-theme-toggle></app-theme-toggle>
-        </div>
-      </div>
-    </div>
+   <app-header></app-header>
 
     <!-- Enhanced Tab Navigation -->
-    <div class="custom-tabs-container">
+    <div class="custom-tabs-container mt-5">
       <ul class="nav custom-tabs">
         <li class="nav-item">
           <button
@@ -295,7 +266,8 @@
     </div>
 
     <!-- Documents Tab -->
-    <div *ngIf="activeTab === 'documents'" class="tab-content-wrapper">
+
+    <!-- <div *ngIf="activeTab === 'documents'" class="tab-content-wrapper mb-5">
       <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
           <div>
@@ -317,7 +289,7 @@
         </div>
       </div>
 
-      <div class="content-card">
+      <div class="content-card ">
         <div class="table-responsive">
           <table class="table table-hover documents-table">
             <thead>
@@ -349,7 +321,7 @@
                 <td>
                   <div class="d-flex align-items-center">
                     <div class="file-icon me-3">
-                      <i class="fas fa-file" [ngClass]="getFileIconClass(document.type)"></i>
+                      <i class="fas " [ngClass]="getFileIconClass(document.type)"></i>
                     </div>
                     <div>
                       <h6 class="mb-0">{{ document.name }}</h6>
@@ -398,7 +370,18 @@
           </table>
         </div>
       </div>
-    </div>
+    </div> -->
+<div [hidden]="activeTab !== 'documents'" class="tab-content-wrapper mb-5">
+    <app-document-list
+  [workspaceId]="''"
+  [searchQuery]="searchQuery"
+  [documents]="filteredDocuments"
+  (documentAdded)="onDocumentAdded($event)"
+  (documentDeleted)="onDocumentDeleted($event)"
+  [refreshTrigger]="refreshTrigger"
+  >
+</app-document-list>
+      </div>
   </div>
 </div>
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FolderService } from '../services/folder-service';
@@ -10,7 +10,15 @@ import { FormsModule } from '@angular/forms';
 import { DocumentUploadComponent } from '../upload-modal/upload-modal';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DocumentList } from '../document-list/document-list';
+import { Header } from "../header/header";
+import { DocumentService } from '../services/document';
+type DocumentUploadEvent = {
+  status: 'success' | 'error';
+  document?: Document;
+  error?: any;
+};
 
+type DocumentEvent = Document | { id: string | undefined };
 @Component({
   selector: 'app-folder-details',
   standalone: true,
@@ -21,11 +29,12 @@ import { DocumentList } from '../document-list/document-list';
     RouterModule,
     DocumentUploadComponent,
     DocumentList,
-  ],
+    Header
+],
   templateUrl: './folder-details.html',
   styleUrls: ['./folder-details.css'],
 })
-export class FolderDetails implements OnInit {
+export class FolderDetails implements OnInit, OnChanges {
   currentFolderId: string = '';
   parentFolder: Folder | null = null;
   FolderId: string | null = null;
@@ -42,6 +51,7 @@ export class FolderDetails implements OnInit {
   @Input() currentFolder: Folder | null = null;
   @Input() documentCount = 0;
   @Input() workspaceId!: string;
+  @Input() searchQuery: string = '';
   showUploadModal: boolean = false;
 
   private resetUIState(): void {
@@ -57,9 +67,12 @@ export class FolderDetails implements OnInit {
     private themeService: ThemeService,
     private router: Router,
     private snackBar: MatSnackBar
+    , private documentService: DocumentService,
+
   ) {}
 
   ngOnInit(): void {
+
     this.route.params.subscribe((params) => {
       this.currentFolderId = params['folderId'] || '';
       this.workspaceId = params['workspaceId'] || '';
@@ -70,7 +83,6 @@ export class FolderDetails implements OnInit {
       this.isLoading = true;
       this.loadCurrentFolder();
       this.loadChildFolders();
-      this.getDocuments();
       this.resetUIState();
     });
     this.subscription.add(
@@ -82,6 +94,14 @@ export class FolderDetails implements OnInit {
     this.currentFolderId = this.route.snapshot.paramMap.get('folderId') || '';
      this.loadChildFolders();
     this.loadCurrentFolder();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const documents = changes['documentCount']?.currentValue;
+    if(documents){
+      this.getDocuments();
+      this.refreshDocuments();
+    }
   }
 
   loadCurrentFolder(): void {
@@ -136,7 +156,7 @@ export class FolderDetails implements OnInit {
       .createFolder(
         folderData.name,
         this.workspaceId,
-        folderData.FolderId != this.currentFolderId ? folderData.FolderId : null
+       this.FolderId
       )
       .subscribe({
         next: (newFolder) => {
@@ -145,6 +165,7 @@ export class FolderDetails implements OnInit {
         },
         error: (err) => console.error('Creation failed', err),
       });
+
   }
 
   closeCreateModal(): void {
@@ -218,21 +239,130 @@ export class FolderDetails implements OnInit {
     this.snackBar.open('Preparing upload...', undefined, { duration: 1500 });
   }
 
-  onDocumentUploaded() {
+  onDocumentUploaded(event: any): void {
+    // If event is a custom event, extract the document
+    if (event && event.status === 'success' && event.document) {
+      this.onDocumentAdded(event.document);
+      this.snackBar.open('Document uploaded successfully!', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+    } else if (event && event.status === 'error') {
+      this.snackBar.open(
+        `Upload failed: ${event.error?.message || 'Unknown error'}`,
+        'Close',
+        {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        }
+      );
+    }
     this.closeUploadModal();
-    this.snackBar.open('Document uploaded successfully', 'Close', {
-      duration: 3000,
-    });
-    this.refreshDocuments();
   }
 
+
+onDocumentAdded(document: DocumentEvent): void {
+  if (!document || !('id' in document) || !document.id) {
+    this.snackBar.open('Invalid document event', 'Close', { duration: 3000 });
+    return;
+  }
+  this.documentCount++;
+  this.snackBar.open('Document added successfully!', 'Close', {
+    duration: 3000,
+    panelClass: ['success-snackbar']
+  });
+  this.refreshDocuments();
+}
+
+ onDocumentDeleted(documentId: string): void {
+  this.documentCount = Math.max(0, this.documentCount - 1);
+  this.snackBar.open('Document deleted successfully', 'Close', {
+    duration: 3000,
+    panelClass: ['success-snackbar']
+  });
+  this.refreshDocuments();
+}
+
+
+  // Modified delete document
+  deleteDocument(documentId: string): void {
+    if (!documentId) {
+      this.snackBar.open('Document ID is missing', 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this document?')) {
+      return;
+    }
+
+    this.snackBar.open('Deleting document...', undefined, { duration: 1500 });
+
+    this.documentService.delete(documentId).subscribe({
+      next: () => {
+        this.onDocumentDeleted(documentId);
+      },
+      error: (err) => {
+        console.error('Error deleting document:', err);
+        this.snackBar.open('Failed to delete document', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+ downloadDocument(documentId: string, documentName: string, documentType?: string) {
+      if (!documentId) {
+        this.snackBar.open('Document ID is missing', 'Close', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+
+      this.snackBar.open(`Downloading ${documentName}...`, undefined, { duration: 1500 });
+      this.documentService.download(documentId).subscribe({
+        next: (blob: Blob) => {
+          const extension = this.getExtensionFromMime(documentType || 'application/octet-stream');
+          const fileName = `${documentName}.${extension}`;
+          this.saveFile(blob, fileName, documentType);
+          this.snackBar.open(`${documentName} downloaded successfully`, 'Close', { duration: 3000 });
+        },
+        error: (err) => {
+          console.error('Download failed:', err);
+          this.snackBar.open(`Failed to download ${documentName}`, 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
+
+
+     private saveFile(blob: Blob, fileName: string, mimeType?: string) {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    }
   closeUploadModal(success: boolean = false) {
     this.showUploadModal = false;
     if (success) {
       this.snackBar.open('Upload completed successfully!', 'Close', {
         duration: 3000,
       });
-      this.getDocuments();
+      this.refreshDocuments();
     } else {
       this.snackBar.open('Upload cancelled', undefined, { duration: 1500 });
     }
@@ -264,10 +394,59 @@ export class FolderDetails implements OnInit {
   }
 
   refreshDocuments() {
-    this.loadChildFolders();
-    this.loadCurrentFolder();
+    //this.loadChildFolders();
+    //this.loadCurrentFolder();
+    this.getDocuments();
   }
 
+
+     private getExtensionFromMime(mimeType: string): string {
+    const extensionMap: Record<string, string> = {
+     'application/pdf': 'pdf',
+      'application/msword': 'doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+      'application/vnd.ms-excel': 'xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'text/plain': 'txt',
+      'application/zip': 'zip',
+      'application/x-rar-compressed': 'rar',
+      'application/octet-stream': 'bin',
+      'application/json': 'json',
+      'application/xml': 'xml',
+      'application/javascript': 'js',
+      'text/css': 'css',
+      'text/html': 'html',
+      'text/csv': 'csv',
+      'text/markdown': 'md',
+      'application/x-www-form-urlencoded': 'url',
+      'application/rtf': 'rtf',
+      'application/x-shockwave-flash': 'swf',
+      'application/vnd.oasis.opendocument.text': 'odt',
+      'application/vnd.oasis.opendocument.spreadsheet': 'ods',
+      'application/vnd.oasis.opendocument.presentation': 'odp',
+      'application/vnd.ms-powerpoint': 'ppt',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+      'application/x-7z-compressed': '7z',
+      'application/x-tar': 'tar',
+      'application/x-gzip': 'gz',
+      'application/x-bzip2': 'bz2',
+      'application/x-iso9660-image': 'iso',
+      'application/x-font-ttf': 'ttf',
+      'application/x-font-opentype': 'otf',
+      'application/x-font-woff': 'woff',
+      'application/x-font-woff2': 'woff2',
+      'application/x-web-app-manifest+json': 'webapp',
+      'application/vnd.apple.installer+xml': 'mpkg',
+      'application/vnd.android.package-archive': 'apk',
+      'application/x-sh': 'sh',
+      'application/x-shellscript': 'sh',
+      'application/x-csh': 'csh',
+      'application/x-perl': 'pl',
+    };
+    return extensionMap[mimeType.toLowerCase()] || 'bin';
+  }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }

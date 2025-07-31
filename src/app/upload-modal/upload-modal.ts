@@ -5,6 +5,7 @@ import { DocumentService } from '../services/document';
 import { WorkspaceService } from '../services/workspaceService';
 import { Workspace } from '../models/workspace.model';
 import { Dashboard } from '../dashboard/dashboard';
+import { Document } from '../models/document.model';
 
 @Component({
   selector: 'app-document-upload',
@@ -18,7 +19,7 @@ export class DocumentUploadComponent implements OnInit {
 @Input() parentFolderId: string | null = null;
 @Input() workspaceId: string | null = null;
   @Input() folderId: string | null = null;
-  @Output() documentUploaded = new EventEmitter<void>();
+@Output() documentAdded = new EventEmitter<Document>();
   @Output() close = new EventEmitter<void>();
   workspaces: Workspace[] = [];
   selectedWorkspaceId: string = '';
@@ -32,6 +33,14 @@ export class DocumentUploadComponent implements OnInit {
       error: () => alert('Failed to load workspaces')
     });
   }
+
+@Output() uploadComplete = new EventEmitter<{
+  status: 'success' | 'error',
+  document?: Document,
+  error?: any
+}>();
+
+
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -56,8 +65,8 @@ upload() {
 
   this.documentService.upload(this.selectedFile, this.selectedWorkspaceId, folderId).subscribe({
     next: () => {
-      this.documentUploaded.emit();
       this.close.emit();
+      this.documentService.updateData.next(true);
       //this.dashboard.refreshDocuments();
     },
     error: (err) => {
@@ -66,6 +75,8 @@ upload() {
     }
   });
 }
+
+
 
 
   closeModal() {

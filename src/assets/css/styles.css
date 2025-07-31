@@ -1,4 +1,7 @@
+
         * {
+          --primary-gradient:linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -958,6 +961,11 @@
   background: rgba(237, 137, 54, 0.1);
 }
 
+.document-icon .fa-music {
+  color: #5eab45;
+  background: rgba(70, 184, 59, 0.1);
+}
+
 .document-info {
   flex: 1;
 }
@@ -1097,6 +1105,15 @@
   background: rgba(113, 128, 150, 0.1);
 }
 
+.file-icon .fa-music {
+  color: #5eab45;
+}
+.file-icon.music{
+    background: rgba(70, 184, 59, 0.1);
+
+}
+
+
 .file-type-badge {
   font-size: 0.75rem;
   font-weight: 600;
@@ -1122,6 +1139,11 @@
 .file-type-badge.badge-image {
   background: rgba(237, 137, 54, 0.1);
   color: #ed8936;
+}
+
+.file-type-badge.badge-audio {
+  background: rgba(94, 168, 82, 0.1);
+  color: #38a169;
 }
 
 .workspace-badge {
@@ -1268,3 +1290,5 @@
 .recent-documents::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+

@@ -1,3 +1,4 @@
+<app-header></app-header>
 <div class="subfolder-container">
   <div class="container-fluid">
     <!-- Header Section -->
@@ -25,6 +26,10 @@
             <i class="fas fa-folder-plus me-2"></i>
             Create Subfolder
           </button>
+          <button class="btn btn-primary ms-2" (click)="openUploadModal()">
+            <i class="fas fa-upload me-2"></i>
+            Upload Document
+          </button>
         </div>
       </div>
 
@@ -33,7 +38,7 @@
         <div class="stat-item">
           <div class="stat-icon"><i class="fas fa-folder"></i></div>
           <div class="stat-content">
-            <span class="stat-number">{{ childFolders!.length || 0 }}</span>
+            <span class="stat-number">{{ childFolders.length || 0 }}</span>
             <span class="stat-label">Subfolders</span>
           </div>
         </div>
@@ -94,12 +99,12 @@
                 <div
                   class="subfolder-dropdown-menu"
                   [class.show]="openDropdownId === folder.id"
-                  (document:click)="closeDropdown()"
+                  (click)="$event.stopPropagation()"
                 >
-                  <button class="dropdown-item" (click)="editFolder(folder); $event.stopPropagation()">
+                  <button class="dropdown-item" (click)="editFolder(folder)">
                     <i class="fas fa-edit me-2"></i> Rename
                   </button>
-                  <button class="dropdown-item danger" (click)="deleteFolder(folder.id); $event.stopPropagation()">
+                  <button class="dropdown-item danger" (click)="deleteFolder(folder.id)">
                     <i class="fas fa-trash me-2"></i> Delete
                   </button>
                 </div>
@@ -139,11 +144,8 @@
       </div>
     </div>
 
-<!-- Document List Section -->
-<div class="subfolder-container">
-  <div class="container-fluid">
+    <!-- Documents Section -->
     <div class="content-section mt-5">
-      <!-- Section Header -->
       <div class="section-header d-flex justify-content-between align-items-center">
         <div>
           <h3 class="section-title">
@@ -153,29 +155,21 @@
             {{ documentCount }} documents
           </span>
         </div>
-        <div class="upload-document-section">
-          <button class="btn btn-primary" (click)="openUploadModal()">
-            <i class="fas fa-upload me-2"></i> Upload Document
-          </button>
-        </div>
       </div>
 
-      <!-- Section Content -->
       <div class="section-content mt-4">
         <app-document-list
-          [workspaceId]="workspaceId"
-          [folderId]="currentFolder?.id">
-        </app-document-list>
-      </div>
+        [workspaceId]="workspaceId"
+        [folderId]="currentFolderId"
+        [searchQuery]="searchQuery"
+        (documentAdded)="onDocumentAdded($event)"
+        (documentDeleted)="onDocumentDeleted($event)">
+      </app-document-list>
 
+      </div>
     </div>
   </div>
 </div>
-
-  </div>
-</div>
-
-
 
 <!-- Create Folder Modal -->
 <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
@@ -194,7 +188,7 @@
         [showModal]="showCreateModal"
         [workspaceId]="workspaceId"
         [FolderId]="FolderId"
-        (closeModal)="showCreateModal = false"
+        (closeModal)="closeCreateModal()"
         (folderCreated)="handleFolderCreated($event)"
       ></app-folder-create-modal>
     </div>
@@ -202,7 +196,6 @@
 </div>
 
 <!-- Edit Folder Modal -->
-<!-- In your edit modal section -->
 <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-header">
@@ -263,28 +256,28 @@
   </div>
 </div>
 
-
-  @if (showUploadModal) {
-    <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>
-    <div class="modal fade show d-block" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document" (click)="$event.stopPropagation()">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title">
-              <i class="fas fa-upload me-2"></i>
-              Upload Document
-            </h3>
-            <button type="button" class="btn-close" (click)="closeUploadModal()"></button>
-          </div>
-          <div class="modal-body">
-            <app-document-upload
-            [workspaceId]="workspaceId"
-            [folderId]="currentFolderId"
-              (documentUploaded)="onDocumentUploaded()"
-              (close)="closeUploadModal()">
-            </app-document-upload>
-          </div>
+<!-- Upload Document Modal -->
+@if (showUploadModal) {
+  <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>
+  <div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i class="fas fa-upload me-2"></i>
+            Upload Document
+          </h3>
+          <button type="button" class="btn-close" (click)="closeUploadModal()"></button>
+        </div>
+        <div class="modal-body">
+          <app-document-upload
+          [workspaceId]="workspaceId"
+          [parentFolderId]="currentFolderId"
+          (documentUploaded)="onDocumentUploaded($event)"
+          (close)="closeUploadModal()">
+        </app-document-upload>
         </div>
       </div>
     </div>
-  }
+  </div>
+}

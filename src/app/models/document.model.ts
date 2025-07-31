@@ -1,5 +1,5 @@
 export interface Document {
-  id?: string;
+  id: string;
   name: string;
   type: string;
   url?: string;

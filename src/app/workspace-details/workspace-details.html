@@ -1,3 +1,6 @@
+<app-header></app-header>
+<div class="main-container">
+  <div class="container-fluid">
 <div class="workspace-detail">
   <!-- Workspace Header -->
   <div class="workspace-header mb-4">
@@ -45,12 +48,15 @@
       <app-document-list
         [workspaceId]="workspaceId"
         [folderId]="currentFolderId!"
+        [searchQuery]="searchQuery"
+
         (download)="downloadDocument($event.id!, $event.name, $event.type)"
         (delete)="deleteDocument($event)">
       </app-document-list>
     </div>
   </div>
-
+</div>
+  </div>
   <!-- Upload Document Modal -->
   @if (showUploadModal) {
     <div class="modal-backdrop fade show" (click)="closeUploadModal()"></div>

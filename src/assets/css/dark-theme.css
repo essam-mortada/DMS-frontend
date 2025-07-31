@@ -47,6 +47,8 @@ body.light-theme {
   --excel-bg: rgba(56, 161, 105, 0.1);
   --image-color: #ed8936;
   --image-bg: rgba(237, 137, 54, 0.1);
+  --audio-bg: rgba(48, 241, 0, 0.1);
+  --audio-color:#2fb325;
 }
 
 /* ===== DARK THEME VARIABLES ===== */
@@ -97,6 +99,8 @@ body.dark-theme {
   --excel-bg: rgba(16, 185, 129, 0.2);
   --image-color: #f59e0b;
   --image-bg: rgba(245, 158, 11, 0.2);
+  --audio-bg: rgba(48, 241, 0, 0.1);
+  --audio-color:#2fb325;
 }
 
 /* ===== GLOBAL STYLES ===== */
@@ -420,6 +424,10 @@ body {
   background: var(--image-bg) !important;
 }
 
+.file-icon .fa-music {
+  color: var(--audio-color) !important;
+}
+
 .file-icon .fa-file {
   color: var(--text-muted) !important;
   background: rgba(148, 163, 184, 0.1) !important;
@@ -451,6 +459,11 @@ body {
 .file-type-badge.badge-image {
   background: var(--image-bg) !important;
   color: var(--image-color) !important;
+}
+
+.file-type-badge.badge-audio {
+  background: var(--audio-bg) !important;
+  color: var(--audio-color) !important;
 }
 
 .workspace-badge {

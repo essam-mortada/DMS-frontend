@@ -7,9 +7,154 @@
       <p>Loading documents...</p>
     </div>
   } @else {
-    <div class="document-grid">
+    <div class="document-controls">
+      <div class="controls-left">
+        <div class="document-count">
+          <i class="fas fa-file-alt me-2"></i>
+          <span class="count-number">{{ documents.length }}</span>
+          <span class="count-label">{{ documents.length === 1 ? 'document' : 'documents' }}</span>
+        </div>
+      </div>
+
+      <div class="controls-right">
+        <!-- View Toggle -->
+        <div class="view-toggle">
+          <button
+            class="view-btn"
+            [class.active]="viewMode === 'grid'"
+            (click)="setViewMode('grid')"
+            title="Grid View"
+          >
+            <i class="fas fa-th"></i>
+          </button>
+          <button
+            class="view-btn"
+            [class.active]="viewMode === 'list'"
+            (click)="setViewMode('list')"
+            title="List View"
+          >
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+
+        <!-- Enhanced Sort Dropdown -->
+        <div class="sort-dropdown" [class.open]="showSortDropdown">
+          <button
+            class="sort-trigger"
+            (click)="toggleSortDropdown()"
+            [attr.aria-expanded]="showSortDropdown"
+          >
+            <div class="sort-trigger-content">
+              <i class="fas fa-sort-amount-down me-2"></i>
+              <span class="sort-label">Sort by:</span>
+              <span class="sort-value">{{ getSortDisplayName() }}</span>
+            </div>
+            <i class="fas fa-chevron-down sort-arrow" [class.rotated]="showSortDropdown"></i>
+          </button>
+
+          <div class="sort-dropdown-menu" [class.show]="showSortDropdown">
+            <div class="dropdown-header">
+              <h6 class="dropdown-title">
+                <i class="fas fa-sort me-2"></i>
+                Sort Options
+              </h6>
+            </div>
+
+            <div class="sort-options">
+              <button
+                class="sort-option"
+                [class.active]="selectedSort === 'name'"
+                (click)="selectSort('name')"
+              >
+                <div class="option-content">
+                  <i class="fas fa-sort-alpha-down option-icon"></i>
+                  <div class="option-text">
+                    <span class="option-label">Name</span>
+                    <span class="option-description">A to Z</span>
+                  </div>
+                </div>
+                <i class="fas fa-check option-check" *ngIf="selectedSort === 'name'"></i>
+              </button>
+
+              <button
+                class="sort-option"
+                [class.active]="selectedSort === 'namedesc'"
+                (click)="selectSort('namedesc')"
+              >
+                <div class="option-content">
+                  <i class="fas fa-sort-alpha-up option-icon"></i>
+                  <div class="option-text">
+                    <span class="option-label">Name</span>
+                    <span class="option-description">Z to A</span>
+                  </div>
+                </div>
+                <i class="fas fa-check option-check" *ngIf="selectedSort === 'namedesc'"></i>
+              </button>
+
+              <button
+                class="sort-option"
+                [class.active]="selectedSort === 'date'"
+                (click)="selectSort('date')"
+              >
+                <div class="option-content">
+                  <i class="fas fa-calendar-alt option-icon"></i>
+                  <div class="option-text">
+                    <span class="option-label">Date Created</span>
+                    <span class="option-description">Newest first</span>
+                  </div>
+                </div>
+                <i class="fas fa-check option-check" *ngIf="selectedSort === 'date'"></i>
+              </button>
+
+              <button
+                class="sort-option"
+                [class.active]="selectedSort === 'size'"
+                (click)="selectSort('size')"
+              >
+                <div class="option-content">
+                  <i class="fas fa-weight-hanging option-icon"></i>
+                  <div class="option-text">
+                    <span class="option-label">File Size</span>
+                    <span class="option-description">Largest first</span>
+                  </div>
+                </div>
+                <i class="fas fa-check option-check" *ngIf="selectedSort === 'size'"></i>
+              </button>
+
+              <button
+                class="sort-option"
+                [class.active]="selectedSort === 'type'"
+                (click)="selectSort('type')"
+              >
+                <div class="option-content">
+                  <i class="fas fa-file-alt option-icon"></i>
+                  <div class="option-text">
+                    <span class="option-label">File Type</span>
+                    <span class="option-description">Grouped by type</span>
+                  </div>
+                </div>
+                <i class="fas fa-check option-check" *ngIf="selectedSort === 'type'"></i>
+              </button>
+            </div>
+
+            <div class="dropdown-footer">
+              <button class="reset-sort-btn" (click)="resetSort()" *ngIf="selectedSort !== 'name'">
+                <i class="fas fa-undo me-2"></i>
+                Reset to Default
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+    <!-- Document Grid -->
+    <div class="document-grid" [class.list-view]="viewMode === 'list'">
       @for (document of documents; track document.id) {
-        <div class="document-card">
+        <div class="document-card" [class.list-item]="viewMode === 'list'">
           <div class="document-card-header">
             <div class="file-icon" [class]="getFileIconClass(document.type)">
               <i class="fas" [class]="getFileIcon(document.type)"></i>
@@ -65,7 +210,11 @@
             <i class="fas fa-file-alt"></i>
           </div>
           <h4>No documents found</h4>
-          <p>Upload your first document to get started</p>
+          <p>{{ hasActiveFilters() ? 'Try adjusting your filters or' : '' }} Upload your first document to get started</p>
+          <button class="btn btn-primary" *ngIf="hasActiveFilters()" (click)="clearAllFilters()">
+            <i class="fas fa-times me-2"></i>
+            Clear Filters
+          </button>
         </div>
       }
     </div>

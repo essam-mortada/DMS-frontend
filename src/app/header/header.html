@@ -1,36 +1,89 @@
-<header class="header">
+<header class="main-header">
+  <div class="container-fluid">
     <div class="header-content">
-        <div class="logo">
-            <i class="fas fa-folder"></i>
-            <a href="/dashboard" style="text-decoration: none;" class="logo-link">
-            <h1>DocuManager</h1>
-            </a>
+      <!-- Brand Section -->
+      <div class="brand-section">
+        <div class="brand-logo" [routerLink]="['/dashboard']" routerLinkActive="router-link-active" >
+          <div class="logo-icon">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-name">DocuManager</h1>
+            <span class="brand-tagline">Document Management System</span>
+          </div>
         </div>
-        <div class="header-actions">
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search documents..." id="searchInput">
+      </div>
+
+
+
+      <!-- Actions Section -->
+      <div class="header-actions">
+        <!-- Enhanced Search -->
+        <div class="search-container">
+          <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search documents, workspaces..."
+              [(ngModel)]="searchQuery"
+              (input)="onSearch($event)"
+              (blur)="onSearchBlur()"
+              #searchInput
+            >
+            <button
+              class="search-clear-btn"
+              *ngIf="searchQuery"
+              (click)="clearSearch()"
+              type="button"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <!-- Search Suggestions Dropdown -->
+
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="user-profile-section">
+
+          <!-- User Menu -->
+          <div class="user-menu-dropdown">
+            <button class="user-menu-btn" (click)="toggleUserMenu()">
+              <div class="user-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+
+              <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </button>
+
+            <div class="user-dropdown-menu" [class.show]="showUserMenu">
+              <div class="dropdown-header">
+                <div class="user-avatar-large">
+                  <i class="fas fa-user"></i>
+                </div>
+
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+
+              <div class="dropdown-divider"></div>
+
+              <button class="dropdown-menu-item logout-btn" (click)="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Logout
+              </button>
             </div>
-           <div class="dropdown" [class.show]="isDropdownOpen">
-  <!-- Combined icon and dropdown toggle -->
-  <button class="btn btn-link text-dark dropdown-toggle d-flex align-items-center"
-          type="button"
-          (click)="toggleDropdown()"
-          id="userDropdown"
-          aria-expanded="false">
-    <i class="fa-solid fa-user me-2"></i>
-  </button>
+          </div>
 
-  <!-- Dropdown menu -->
-  <div class="dropdown-menu dropdown-menu-end"
-       [class.show]="isDropdownOpen"
-       aria-labelledby="userDropdown">
-
-    <button class="dropdown-item" (click)="logout()">
-      <i class="fas fa-sign-out-alt me-2"></i> Logout
-    </button>
-  </div>
-</div>
+          <!-- Theme Toggle -->
+          <div class="theme-toggle-wrapper">
+            <app-theme-toggle></app-theme-toggle>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </header>

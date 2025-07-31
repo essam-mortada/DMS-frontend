@@ -1,22 +1,20 @@
 // src/app/services/document.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Document } from '../models/document.model';
 
 @Injectable({ providedIn: 'root' })
 export class DocumentService {
   private baseUrl = 'http://localhost:8081/api/documents';
-
+  updateData:BehaviorSubject<boolean>=new BehaviorSubject<boolean>(false);
   constructor(private http: HttpClient) {}
 
  upload(file: File, workspaceId: string, folderId: string | null = null): Observable<any> {
   const formData = new FormData();
 
-  // Append the file
   formData.append('file', file);
 
-  // Create metadata object
   const meta = {
     name: file.name,
     type: file.type,
@@ -24,7 +22,6 @@ export class DocumentService {
     folderId: folderId
   };
 
-  // Append metadata as JSON blob
   const metaBlob = new Blob([JSON.stringify(meta)], { type: 'application/json' });
   formData.append('meta', metaBlob);
 
@@ -54,10 +51,22 @@ export class DocumentService {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
-  search(keyword: string): Observable<Document[]> {
-    return this.http.get<Document[]>(`${this.baseUrl}/search?keyword=${keyword}`);
-  }
+ searchDocuments(keyword: string): Observable<Document[]> {
+  return this.http.get<Document[]>(`${this.baseUrl}/search?keyword=${encodeURIComponent(keyword)}`);
+}
 
+
+searchDocumentsByWorkspace(workspaceId: string, keyword: string) {
+  return this.http.get<Document[]>(`${this.baseUrl}/workspace/${workspaceId}/search`, {
+    params: { keyword }
+  });
+}
+
+searchDocumentsByFolder(folderId: string, keyword: string) {
+  return this.http.get<Document[]>(`${this.baseUrl}/folder/${folderId}/search`, {
+    params: { keyword }
+  });
+}
   getMetadata(id: string): Observable<Document> {
     return this.http.get<Document>(`${this.baseUrl}/${id}/metadata`);
   }
@@ -65,4 +74,12 @@ export class DocumentService {
   updateMetadata(id: string, data: Partial<Document>) {
     return this.http.put<Document>(`${this.baseUrl}/${id}/metadata`, data);
   }
+
+getSortedDocuments(workspaceId: string, sort: string) {
+  const params = new HttpParams()
+    .set('workspaceId', workspaceId)
+    .set('sort', sort);
+
+  return this.http.get<Document[]>(`${this.baseUrl}/sort`, { params });
+}
 }
