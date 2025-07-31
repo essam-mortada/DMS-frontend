@@ -56,8 +56,14 @@ export class Dashboard implements OnInit, OnDestroy {
         this.isDarkMode = isDark
         console.log("Theme changed to:", isDark ? "dark" : "light")
       }),
-    )
+    );
+    this.subscription.add(
+      this.documentService.documents$.subscribe(documents => {
+        this.documents = documents;
+      })
+    );
     this.loadWorkspaces();
+    this.documentService.fetchDocumentsByUser();
   }
 
   loadWorkspaces() {
@@ -109,10 +115,6 @@ export class Dashboard implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.searchQuery = input.value;
     this.searchService.updateSearchTerm(this.searchQuery);
-  }
-
-  onDocumentsUpdated(documents: Document[]): void {
-    this.documents = documents;
   }
 
   getPDFCount(): number {
@@ -201,7 +203,7 @@ getFileType(fileType: string): string {
       next: (blob: Blob) => {
         const extension = this.getExtensionFromMime(documentType || 'application/octet-stream');
         const fileName = `${documentName}.${extension}`;
-        this.saveFile(blob, fileName, documentType);
+        this.saveFile(blob, fileName);
         this.snackBar.open(`${documentName} downloaded successfully`, 'Close', { duration: 3000 });
       },
       error: (err) => {
@@ -214,7 +216,7 @@ getFileType(fileType: string): string {
     });
   }
 
-  private saveFile(blob: Blob, fileName: string, mimeType?: string) {
+  private saveFile(blob: Blob, fileName: string) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -239,41 +241,6 @@ getFileType(fileType: string): string {
       'image/jpeg': 'jpg',
       'image/png': 'png',
       'text/plain': 'txt',
-      'application/zip': 'zip',
-      'application/x-rar-compressed': 'rar',
-      'application/octet-stream': 'bin',
-      'application/json': 'json',
-      'application/xml': 'xml',
-      'application/javascript': 'js',
-      'text/css': 'css',
-      'text/html': 'html',
-      'text/csv': 'csv',
-      'text/markdown': 'md',
-      'application/x-www-form-urlencoded': 'url',
-      'application/rtf': 'rtf',
-      'application/x-shockwave-flash': 'swf',
-      'application/vnd.oasis.opendocument.text': 'odt',
-      'application/vnd.oasis.opendocument.spreadsheet': 'ods',
-      'application/vnd.oasis.opendocument.presentation': 'odp',
-      'application/vnd.ms-powerpoint': 'ppt',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
-      'application/x-7z-compressed': '7z',
-      'application/x-tar': 'tar',
-      'application/x-gzip': 'gz',
-      'application/x-bzip2': 'bz2',
-      'application/x-iso9660-image': 'iso',
-      'application/x-font-ttf': 'ttf',
-      'application/x-font-opentype': 'otf',
-      'application/x-font-woff': 'woff',
-      'application/x-font-woff2': 'woff2',
-      'application/x-web-app-manifest+json': 'webapp',
-      'application/vnd.apple.installer+xml': 'mpkg',
-      'application/vnd.android.package-archive': 'apk',
-      'application/x-sh': 'sh',
-      'application/x-shellscript': 'sh',
-      'application/x-csh': 'csh',
-      'application/x-perl': 'pl',
-      'audio/mp3':'audio'
     };
     return extensionMap[mimeType.toLowerCase()] || 'bin';
   }

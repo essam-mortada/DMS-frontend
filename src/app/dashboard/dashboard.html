@@ -268,7 +268,6 @@
     <div [hidden]="activeTab !== 'documents'" class="tab-content-wrapper mb-5">
         <app-document-list
           [searchQuery]="searchQuery"
-          (documentsUpdated)="onDocumentsUpdated($event)"
         >
     </app-document-list>
           </div>

@@ -189,14 +189,14 @@
               </button>
               <button
                 class="action-btn download-btn"
-                (click)="onDownload(document)"
+                (click)="downloadDocument(document.id!, document.name, document.type)"
                 title="Download"
               >
                 <i class="fas fa-download"></i>
               </button>
               <button
                 class="action-btn delete-btn"
-                (click)="onDelete(document.id!)"
+                (click)="deleteDocument(document.id!)"
                 title="Delete"
               >
                 <i class="fas fa-trash"></i>
