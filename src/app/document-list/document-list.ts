@@ -34,7 +34,8 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   @Input() refreshTrigger: number = 0;
 
   @Output() documentDeleted = new EventEmitter<string>();
-    @Output() documentAdded = new EventEmitter<Document>();
+  @Output() documentAdded = new EventEmitter<Document>();
+  @Output() documentsUpdated = new EventEmitter<Document[]>();
 
   @Input() documents: Document[] = [];
   showUploadModal: boolean = false;
@@ -283,6 +284,7 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
       )
       .subscribe((documents: Document[]) => {
         this.documents = documents;
+        this.documentsUpdated.emit(this.documents);
 
         const msg =
           documents.length === 0
