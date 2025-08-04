@@ -154,4 +154,12 @@ export class DocumentService {
       responseType: 'blob',
     });
   }
+
+  getDeletedDocuments(): Observable<Document[]> {
+    return this.http.get<Document[]>(`${this.baseUrl}/recycle-bin`);
+  }
+
+  restoreDocument(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}/restore`, {});
+  }
 }

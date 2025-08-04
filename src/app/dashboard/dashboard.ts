@@ -136,6 +136,8 @@ export class Dashboard implements OnInit, OnDestroy {
     return this.documents.filter(doc => doc.type.includes('image')).length;
   }
 
+
+  
   getSizeCount(): string {
     if (!this.documents || this.documents.length === 0) return '0 bytes';
 

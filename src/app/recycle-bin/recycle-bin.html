@@ -1,0 +1,250 @@
+<app-header></app-header>
+<div class="recycle-bin-container">
+  <!-- Header Section -->
+  <div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="content-title">
+          <i class="fas fa-trash-restore me-3 text-warning"></i>
+          Recycle Bin
+        </h2>
+        <p class="content-subtitle">Restore or permanently delete documents</p>
+      </div>
+      <div class="header-actions">
+        <div class="search-container me-3">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="text"
+            class="form-control search-input"
+            placeholder="Search deleted documents..."
+            [(ngModel)]="searchQuery"
+          >
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="stats-card stats-card-warning">
+        <div class="stats-card-body">
+          <div class="stats-icon">
+            <i class="fas fa-trash"></i>
+          </div>
+          <div class="stats-content">
+            <h3 class="stats-number">{{ deletedDocuments.length }}</h3>
+            <p class="stats-label">Deleted Documents</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card stats-card-info">
+        <div class="stats-card-body">
+          <div class="stats-icon">
+            <i class="fas fa-check-square"></i>
+          </div>
+          <div class="stats-content">
+            <h3 class="stats-number">{{ selectedDocuments.size }}</h3>
+            <p class="stats-label">Selected</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card stats-card-success">
+        <div class="stats-card-body">
+          <div class="stats-icon">
+            <i class="fas fa-hdd"></i>
+          </div>
+          <div class="stats-content">
+<h3 class="stats-number">{{ totalDeletedSizeInMB}}</h3>
+ </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card stats-card-primary">
+        <div class="stats-card-body">
+          <div class="stats-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stats-content">
+            <h3 class="stats-number">30</h3>
+            <p class="stats-label">Days Retention</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions -->
+  <div class="bulk-actions-bar" *ngIf="selectedDocuments.size > 0">
+    <div class="d-flex justify-content-between align-items-center">
+      <span class="selected-count">
+        <i class="fas fa-check-circle me-2"></i>
+        {{ selectedDocuments.size }} document{{ selectedDocuments.size > 1 ? 's' : '' }} selected
+      </span>
+      <div class="bulk-action-buttons">
+        <button
+          class="btn btn-success me-2"
+          [disabled]="loading"
+          (click)="restoreSelected()"
+        >
+          <i class="fas fa-undo me-2"></i>
+          Restore Selected
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content-card">
+    <!-- Toolbar -->
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <div class="form-check me-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="selectAll"
+              [checked]="selectedDocuments.size === filteredDocuments.length && filteredDocuments.length > 0"
+              [indeterminate]="selectedDocuments.size > 0 && selectedDocuments.size < filteredDocuments.length"
+              (change)="toggleSelectAll()"
+            >
+            <label class="form-check-label" for="selectAll">
+              Select All
+            </label>
+          </div>
+          <h5 class="card-title mb-0">
+            <i class="fas fa-list me-2"></i>
+            Deleted Documents ({{ filteredDocuments.length }})
+          </h5>
+        </div>
+        <div class="d-flex align-items-center">
+          <label class="me-2">Sort by:</label>
+          <select class="form-select form-select-sm me-2" [(ngModel)]="sortBy" style="width: auto;">
+            <option value="deletedAt">Date Deleted</option>
+            <option value="name">Name</option>
+            <option value="size">Size</option>
+            <option value="originalWorkspaceName">Workspace</option>
+          </select>
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
+          >
+            <i class="fas" [ngClass]="sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted">Loading deleted documents...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredDocuments.length === 0" class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-trash-alt"></i>
+      </div>
+      <h4>{{ searchQuery ? 'No matching documents' : 'Recycle bin is empty' }}</h4>
+      <p>{{ searchQuery ? 'Try adjusting your search terms' : 'Deleted documents will appear here and can be restored within 30 days' }}</p>
+      <button *ngIf="searchQuery" class="btn btn-primary" (click)="searchQuery = ''">
+        <i class="fas fa-times me-2"></i>
+        Clear Search
+      </button>
+    </div>
+
+    <!-- Documents Table -->
+    <div *ngIf="!loading && filteredDocuments.length > 0" class="table-responsive">
+     <table class="table table-hover recycle-bin-table">
+  <thead>
+    <tr>
+      <th width="50">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [checked]="selectedDocuments.size === filteredDocuments.length"
+            [indeterminate]="selectedDocuments.size > 0 && selectedDocuments.size < filteredDocuments.length"
+            (change)="toggleSelectAll()"
+          >
+        </div>
+      </th>
+      <th>Document</th>
+      <th>Type</th>
+      <th>Original Location</th>
+      <th>Deleted By</th>
+      <th>Deleted</th>
+      <th>Days Ago</th>
+      <th class="text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let document of filteredDocuments" class="document-row">
+      <td>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [checked]="selectedDocuments.has(document.id)"
+            (change)="toggleDocumentSelection(document.id)"
+          >
+        </div>
+      </td>
+      <td>
+        <div class="d-flex align-items-center">
+          <div class="file-icon me-3">
+            <i class="fas" [ngClass]="getFileIconClass(document.type)"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 document-name">{{ document.name }}</h6>
+            <small class="text-muted">{{ formatFileSize(document.size!) }}</small>
+          </div>
+        </div>
+      </td>
+      <td>
+        <span class="badge file-type-badge" [ngClass]="getFileTypeBadgeClass(document.type)">
+          {{ getFileType(document.type) }}
+        </span>
+      </td>
+      
+      <td class="text-center">
+        <div class="action-buttons-group">
+          <button
+            class="btn btn-sm btn-success me-1"
+            [disabled]="loading"
+            (click)="restoreDocument(document)"
+            title="Restore Document"
+          >
+            <i class="fas fa-undo"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+  </div>
+
+  <!-- Auto-deletion Warning -->
+  <div class="alert alert-warning mt-4" *ngIf="deletedDocuments.length > 0">
+    <div class="d-flex align-items-center">
+      <i class="fas fa-exclamation-triangle me-3"></i>
+      <div>
+        <strong>Auto-deletion Notice:</strong>
+        Documents in the recycle bin are automatically deleted after 30 days.
+        Documents older than 25 days are highlighted in red.
+      </div>
+    </div>
+  </div>
+</div>

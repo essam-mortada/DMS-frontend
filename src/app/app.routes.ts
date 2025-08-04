@@ -10,6 +10,7 @@ import { WorkspaceDetails } from './workspace-details/workspace-details';
 import { DocumentPreview } from './document-preview/document-preview';
 import { FolderDetails } from './folder-details/folder-details';
 import { PublicShareComponent } from './public-share/public-share';
+import { RecycleBinComponent } from './recycle-bin/recycle-bin';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -51,5 +52,10 @@ export const routes: Routes = [
   path:'folders/:folderId',
   canActivate: [AuthGuard],
   component: FolderDetails
+},
+{
+  path: 'recycle-bin',
+  canActivate: [AuthGuard],
+  component: RecycleBinComponent
 }
 ];
