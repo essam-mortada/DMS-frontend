@@ -14,7 +14,6 @@ import { Header } from "../header/header";
 @Component({
   selector: 'app-recycle-bin',
   templateUrl: './recycle-bin.html',
-  styleUrls: ['./recycle-bin.css'],
   imports: [CommonModule, FormsModule, RouterModule, Header],
   standalone: true,
 })
@@ -23,8 +22,8 @@ export class RecycleBinComponent implements OnInit, OnDestroy {
   filteredDocuments: Document[] = [];
   selectedDocuments = new Set<string>();
   loading = false;
-  searchQuery = '';
-  sortBy = 'deletedAt';
+private _searchQuery = '';
+  sortBy = 'updatedAt';
   sortOrder: 'asc' | 'desc' = 'desc';
 
   private destroy$ = new Subject<void>();
@@ -43,12 +42,21 @@ export class RecycleBinComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  get searchQuery(): string {
+  return this._searchQuery;
+}
+set searchQuery(value: string) {
+  this._searchQuery = value;
+  this.applyFilters();
+}
   fetchDeletedDocuments(): void {
     this.loading = true;
     this.documentService.getDeletedDocuments()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (documents) => {
+          console.log('Received deleted documents:', JSON.stringify(documents, null, 2));
+
           this.deletedDocuments = documents;
           this.applyFilters();
           this.loading = false;
@@ -93,9 +101,18 @@ applyFilters(): void {
 
 private getSortValue(doc: Document): any {
   switch (this.sortBy) {
-    case 'name': return doc.name.toLowerCase();
-    case 'size': return doc.size;
+    case 'name':
+      return doc.name.toLowerCase();
+    case 'size':
+      return doc.size || 0;
     case 'deletedAt':
+    case 'updatedAt':
+      return doc.updatedAt ? new Date(doc.updatedAt).getTime() : 0;
+    case 'originalWorkspaceName':
+    case 'workspaceId':
+      return doc.workspaceId;
+    default:
+      return doc.updatedAt ? new Date(doc.updatedAt).getTime() : 0;
   }
 }
   toggleSelectAll(): void {
@@ -159,31 +176,33 @@ private getSortValue(doc: Document): any {
     return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  getFileIconClass(type: string): string {
-    if (type.includes('pdf')) return 'fa-file-pdf';
-    if (type.includes('word')) return 'fa-file-word';
-    if (type.includes('excel')) return 'fa-file-excel';
-    if (type.includes('image')) return 'fa-image';
-    return 'fa-file';
-  }
+ getFileIconClass(type: string | null | undefined): string {
+  if (!type) return 'fa-file';
+  if (type.includes('pdf')) return 'fa-file-pdf';
+  if (type.includes('word')) return 'fa-file-word';
+  if (type.includes('excel')) return 'fa-file-excel';
+  if (type.includes('image')) return 'fa-image';
+  return 'fa-file';
+}
+getFileType(type: string | null | undefined): string {
+  if (!type) return 'File';
+  if (type.includes('pdf')) return 'PDF';
+  if (type.includes('word')) return 'Word';
+  if (type.includes('excel')) return 'Excel';
+  if (type.includes('image')) return 'Image';
+  return 'File';
+}
 
-  getFileType(type: string): string {
-    if (type.includes('pdf')) return 'PDF';
-    if (type.includes('word')) return 'Word';
-    if (type.includes('excel')) return 'Excel';
-    if (type.includes('image')) return 'Image';
-    return 'File';
-  }
+getFileTypeBadgeClass(type: string | null | undefined): string {
+  if (!type) return 'badge-default';
+  if (type.includes('pdf')) return 'badge-pdf';
+  if (type.includes('word')) return 'badge-word';
+  if (type.includes('excel')) return 'badge-excel';
+  if (type.includes('image')) return 'badge-image';
+  return 'badge-default';
+}
 
-  getFileTypeBadgeClass(type: string): string {
-    if (type.includes('pdf')) return 'badge-pdf';
-    if (type.includes('word')) return 'badge-word';
-    if (type.includes('excel')) return 'badge-excel';
-    if (type.includes('image')) return 'badge-image';
-    return 'badge-default';
-  }
-
-  getDaysAgo(deletedAt: string): number {
+  getDaysAgo(deletedAt: Date | string): number {
     const deletedDate = new Date(deletedAt);
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - deletedDate.getTime());

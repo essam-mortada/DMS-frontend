@@ -186,50 +186,58 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
     this.activeFiltersCount = this.selectedFileTypes.length + (this.selectedDateRange ? 1 : 0)
   }
 
-  getFileIcon(fileType: string): string {
-    if (fileType.includes('pdf')) return 'fa-file-pdf';
-    if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
-    if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
-    if (fileType.includes('image')) return 'fa-file-image';
-    if (fileType.includes('audio')) return 'fa-music';
-    return 'fa-file';
-  }
+ getFileIcon(fileType: string | null | undefined): string {
+  if (!fileType) return 'fa-file';
+  if (fileType.includes('pdf')) return 'fa-file-pdf';
+  if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
+  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
+  if (fileType.includes('image')) return 'fa-file-image';
+  if (fileType.includes('audio')) return 'fa-music';
+  return 'fa-file';
+}
 
-  getFileIconClass(fileType: string): string {
-    if (fileType.includes('pdf')) return 'pdf';
-    if (fileType.includes('word') || fileType.includes('document')) return 'word';
-    if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'excel';
-    if (fileType.includes('image')) return 'image';
-    if (fileType.includes('audio')) return 'music';
-    return 'default';
-  }
 
-  getFileTypeDisplay(fileType: string): string {
-    if (fileType.includes('pdf')) return 'PDF';
-    if (fileType.includes('word') || fileType.includes('document')) return 'Word';
-    if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'Excel';
-    if (fileType.includes('image')) return 'Image';
-    if (fileType.includes('audio')) return 'music';
-    return 'File';
-  }
+getFileIconClass(fileType: string | null | undefined): string {
+  if (!fileType) return 'default';
+  if (fileType.includes('pdf')) return 'pdf';
+  if (fileType.includes('word') || fileType.includes('document')) return 'word';
+  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'excel';
+  if (fileType.includes('image')) return 'image';
+  if (fileType.includes('audio')) return 'music';
+  return 'default';
+}
 
-  getFileTypeBadgeClass(fileType: string): string {
-    if (fileType.includes('pdf')) return 'badge-pdf';
-    if (fileType.includes('word') || fileType.includes('document')) return 'badge-word';
-    if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'badge-excel';
-    if (fileType.includes('image')) return 'badge-image';
-    if (fileType.includes('audio')) return 'badge-audio';
-    return 'badge-default';
-  }
 
-  getFileSize(document: any): string {
-    if (!document || !document.size) return 'Unknown size';
-    const size = document.size;
-    if (size < 1024) return `${size} B`;
-    else if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
-    else if (size < 1024 * 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(2)} MB`;
-    else return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-  }
+getFileTypeDisplay(fileType: string | null | undefined): string {
+  if (!fileType) return 'File';
+  if (fileType.includes('pdf')) return 'PDF';
+  if (fileType.includes('word') || fileType.includes('document')) return 'Word';
+  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'Excel';
+  if (fileType.includes('image')) return 'Image';
+  if (fileType.includes('audio')) return 'Music';
+  return 'File';
+}
+
+getFileTypeBadgeClass(fileType: string | null | undefined): string {
+  if (!fileType) return 'badge-default';
+  if (fileType.includes('pdf')) return 'badge-pdf';
+  if (fileType.includes('word') || fileType.includes('document')) return 'badge-word';
+  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'badge-excel';
+  if (fileType.includes('image')) return 'badge-image';
+  if (fileType.includes('audio')) return 'badge-audio';
+  return 'badge-default';
+}
+
+
+getFileSize(document: any): string {
+  if (!document || !document.size) return 'Unknown size';
+  const size = document.size;
+  if (size < 1024) return `${size} B`;
+  else if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+  else if (size < 1024 * 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  else return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
 
   ngOnDestroy(): void {
     this.destroy$.next();

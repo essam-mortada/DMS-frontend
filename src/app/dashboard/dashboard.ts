@@ -17,6 +17,8 @@ import { FormsModule } from '@angular/forms';
 import { SearchService } from '../services/search-service';
 import { DocumentList } from '../document-list/document-list';
 
+// ... all imports remain unchanged ...
+
 @Component({
   selector: 'app-dashboard',
   imports: [WorkspaceList, CreateWorkspaceModal, DocumentUploadComponent, CommonModule, RouterModule, FormsModule, Header, DocumentList],
@@ -28,13 +30,13 @@ export class Dashboard implements OnInit, OnDestroy {
   documents: Document[] = [];
   showCreateWorkspaceModal = false;
   showUploadModal = false;
-  isDarkMode = false
+  isDarkMode = false;
   searchQuery: string = '';
   @ViewChild('workspaceList') workspaceList!: WorkspaceList;
   @ViewChild('DocumentList') documentListRef?: DocumentList;
 
   authService = inject(AuthService);
-  private subscription: Subscription = new Subscription()
+  private subscription: Subscription = new Subscription();
 
   constructor(
     private themeService: ThemeService,
@@ -47,24 +49,28 @@ export class Dashboard implements OnInit, OnDestroy {
   ) {}
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe()
+    this.subscription.unsubscribe();
   }
 
   ngOnInit() {
-      this.subscription.add(
+    this.subscription.add(
       this.searchService.searchTerm$.subscribe(term => {
         this.searchQuery = term;
       })
     );
     this.subscription.add(
       this.themeService.darkMode$.subscribe((isDark) => {
-        this.isDarkMode = isDark
-        console.log("Theme changed to:", isDark ? "dark" : "light")
-      }),
+        this.isDarkMode = isDark;
+        console.log("Theme changed to:", isDark ? "dark" : "light");
+      })
     );
     this.subscription.add(
       this.documentService.documents$.subscribe(documents => {
-        this.documents = documents;
+        // fallback type to empty string to avoid .includes on null
+        this.documents = documents.map(doc => ({
+          ...doc,
+          type: doc.type || ''
+        }));
       })
     );
     this.loadWorkspaces();
@@ -92,7 +98,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   setTab(tab: 'dashboard' | 'workspaces' | 'documents') {
     this.activeTab = tab;
-     this.cdr.detectChanges();
+    this.cdr.detectChanges();
     this.snackBar.open(`Switched to ${tab} view`, undefined, { duration: 1500 });
   }
 
@@ -123,21 +129,19 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   getPDFCount(): number {
-    return this.documents.filter(doc => doc.type.includes('pdf')).length;
+    return this.documents.filter(doc => doc.type?.includes('pdf')).length;
   }
 
   getWordCount(): number {
     return this.documents.filter(doc =>
-      doc.type.includes('word') || doc.type.includes('document')
+      doc.type?.includes('word') || doc.type?.includes('document')
     ).length;
   }
 
   getImageCount(): number {
-    return this.documents.filter(doc => doc.type.includes('image')).length;
+    return this.documents.filter(doc => doc.type?.includes('image')).length;
   }
 
-
-  
   getSizeCount(): string {
     if (!this.documents || this.documents.length === 0) return '0 bytes';
 
@@ -172,29 +176,29 @@ export class Dashboard implements OnInit, OnDestroy {
 
     return this.documents.filter(doc => {
       const uploadDate = new Date(doc.updatedAt! || doc.createdAt);
-      return uploadDate >= startOfWeek && uploadDate <= now;
+       return uploadDate >= startOfWeek && uploadDate <= now;
     }).length;
   }
 
-  getFileIconClass(fileType: string): string {
-  if (fileType.includes('pdf')) return 'fa-file-pdf';
-  if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
-  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
-  if (fileType.includes('image')) return 'fa-file-image';
-  if (fileType.includes('audio')) return 'fa-music';
+  getFileIconClass(type: string | null | undefined): string {
+    if (!type) return 'fa-file';
+    if (type.includes('pdf')) return 'fa-file-pdf';
+    if (type.includes('word')) return 'fa-file-word';
+    if (type.includes('excel')) return 'fa-file-excel';
+    if (type.includes('image')) return 'fa-image';
+    if (type.includes('audio')) return 'fa-music';
+    return 'fa-file';
+  }
 
-  return 'fa-file';
-}
-
-getFileType(fileType: string): string {
-  if (fileType.includes('pdf')) return 'PDF';
-  if (fileType.includes('word') || fileType.includes('document')) return 'Word';
-  if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'Excel';
-  if (fileType.includes('image')) return 'Image';
-  if (fileType.includes('audio')) return 'music';
-
-  return 'File';
-}
+  getFileType(fileType: string | null | undefined): string {
+    if (!fileType) return 'File';
+    if (fileType.includes('pdf')) return 'PDF';
+    if (fileType.includes('word') || fileType.includes('document')) return 'Word';
+    if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'Excel';
+    if (fileType.includes('image')) return 'Image';
+    if (fileType.includes('audio')) return 'Music';
+    return 'File';
+  }
 
   downloadDocument(documentId: string, documentName: string, documentType?: string) {
     if (!documentId) {
@@ -231,16 +235,15 @@ getFileType(fileType: string): string {
     document.body.appendChild(a);
     a.click();
 
-    // Cleanup
     setTimeout(() => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     }, 100);
   }
 
-   private getExtensionFromMime(mimeType: string): string {
+  private getExtensionFromMime(mimeType: string): string {
     const extensionMap: Record<string, string> = {
-     'application/pdf': 'pdf',
+      'application/pdf': 'pdf',
       'application/msword': 'doc',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
       'application/vnd.ms-excel': 'xls',

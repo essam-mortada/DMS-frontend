@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { Document } from '../models/document.model';
 
 @Injectable({ providedIn: 'root' })
@@ -143,7 +143,7 @@ export class DocumentService {
     return this.http.put<Document>(`${this.baseUrl}/${id}/metadata`, data);
   }
 
-   publicPreview(token: string): Observable<Blob> {
+  publicPreview(token: string): Observable<Blob> {
     return this.http.get(`${this.publicShareUrl}/preview/${token}`, {
       responseType: 'blob',
     });
@@ -156,7 +156,29 @@ export class DocumentService {
   }
 
   getDeletedDocuments(): Observable<Document[]> {
-    return this.http.get<Document[]>(`${this.baseUrl}/recycle-bin`);
+    return this.http.get<any[]>(`${this.baseUrl}/recycle-bin`).pipe(
+      map((documents) =>
+        documents.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              name: doc.name,
+              type: doc.type,
+              url: doc.url,
+              ownerNid: doc.owner_nid,
+              workspaceId: doc.workspace_id,
+              folderId: doc.folder_id,
+              size: doc.size,
+              tags: doc.tags,
+              createdAt: doc.created_at,
+              updatedAt: doc.updated_at,
+              linkSharingEnabled: doc.link_sharing_enabled,
+              shareLinkPermission: doc.share_link_permission,
+              shareLinkToken: doc.share_link_token,
+            } as Document)
+        )
+      )
+    );
   }
 
   restoreDocument(id: string): Observable<any> {

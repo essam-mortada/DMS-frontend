@@ -3,7 +3,11 @@
     <div class="header-content">
       <!-- Brand Section -->
       <div class="brand-section">
-        <div class="brand-logo" [routerLink]="['/dashboard']" routerLinkActive="router-link-active" >
+        <div
+          class="brand-logo"
+          [routerLink]="['/dashboard']"
+          routerLinkActive="router-link-active"
+        >
           <div class="logo-icon">
             <i class="fas fa-folder-open"></i>
           </div>
@@ -13,8 +17,6 @@
           </div>
         </div>
       </div>
-
-
 
       <!-- Actions Section -->
       <div class="header-actions">
@@ -30,7 +32,7 @@
               (input)="onSearch($event)"
               (blur)="onSearchBlur()"
               #searchInput
-            >
+            />
             <button
               class="search-clear-btn"
               *ngIf="searchQuery"
@@ -42,14 +44,11 @@
           </div>
 
           <!-- Search Suggestions Dropdown -->
-
         </div>
 
         <!-- User Profile Section -->
         <div class="user-profile-section">
-<button class="header-icon-btn" [routerLink]="['/recycle-bin']" title="Recycle Bin">
-             <i class="fas fa-trash"></i>
-          </button>
+   
 
           <!-- User Menu -->
           <div class="user-menu-dropdown">
@@ -66,11 +65,9 @@
                 <div class="user-avatar-large">
                   <i class="fas fa-user"></i>
                 </div>
-
               </div>
 
               <div class="dropdown-divider"></div>
-
 
               <div class="dropdown-divider"></div>
 
