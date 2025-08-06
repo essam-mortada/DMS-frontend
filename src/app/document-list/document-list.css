@@ -797,3 +797,13 @@
   background-color: yellowgreen;
   color: white;
 }
+.summarize-btn {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.summarize-btn:hover {
+  background: var(--primary-color);
+  color: var(--text-white);
+  transform: translateY(-2px);
+}

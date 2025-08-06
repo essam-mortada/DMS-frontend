@@ -22,6 +22,11 @@
         </div>
 
         <div class="folder-actions">
+          <app-audio-transcript-button
+      [workspaceId]="workspaceId"
+      [folderId]="FolderId!"
+      [routerLink]="['/audio-record', workspaceId, currentFolderId]"
+      ></app-audio-transcript-button>
           <button class="btn btn-primary" (click)="openCreateModal()">
             <i class="fas fa-folder-plus me-2"></i>
             Create Subfolder

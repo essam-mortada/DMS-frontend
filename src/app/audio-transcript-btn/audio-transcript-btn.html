@@ -1,0 +1,52 @@
+<button
+  [class]="getButtonClasses()"
+  [disabled]="disabled || loading"
+  [title]="tooltip"
+  (click)="onClick($event)"
+  type="button"
+>
+  <!-- Loading Spinner -->
+  <div class="btn-spinner" *ngIf="loading">
+    <div class="spinner-ring">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="btn-content" [class.hidden]="loading">
+    <!-- Icon with Sound Waves -->
+    <div class="btn-icon" *ngIf="showIcon">
+      <i class="fas fa-microphone icon-main"></i>
+
+      <!-- Animated Sound Waves -->
+      <div class="sound-waves" *ngIf="showWaves || pulse">
+        <span class="wave wave-1"></span>
+        <span class="wave wave-2"></span>
+        <span class="wave wave-3"></span>
+        <span class="wave wave-4"></span>
+      </div>
+
+      <!-- Pulse Ring -->
+      <div class="pulse-ring" *ngIf="pulse"></div>
+    </div>
+
+    <!-- Text -->
+    <span class="btn-text" *ngIf="showText">{{ text }}</span>
+
+    <!-- Badge -->
+    <span class="btn-badge" *ngIf="badge && badge > 0">
+      {{ badge > 99 ? '99+' : badge }}
+    </span>
+  </div>
+
+  <!-- Ripple Effect Container -->
+  <div class="btn-ripple-container">
+    <div class="btn-ripple"></div>
+  </div>
+
+  <!-- Hover Glow Effect -->
+  <div class="btn-glow"></div>
+</button>

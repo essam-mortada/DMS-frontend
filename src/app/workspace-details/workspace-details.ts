@@ -17,11 +17,12 @@ import { DocumentUploadComponent } from "../upload-modal/upload-modal";
 import { ThemeService } from '../services/theme.service';
 import { Subscription } from 'rxjs';
 import { SearchService } from '../services/search-service';
+import { AudioTranscriptButtonComponent } from "../audio-transcript-btn/audio-transcript-btn";
 
 declare var bootstrap: any;
 @Component({
   selector: 'app-workspace-details',
-   imports: [CommonModule, RouterModule, FolderBreadcrumbs, FolderList, DocumentList, DocumentUploadComponent, Header],
+   imports: [CommonModule, RouterModule, FolderBreadcrumbs, FolderList, DocumentList, DocumentUploadComponent, Header, AudioTranscriptButtonComponent],
 
   templateUrl: './workspace-details.html',
   styleUrl: './workspace-details.css'

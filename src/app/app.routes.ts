@@ -11,6 +11,7 @@ import { DocumentPreview } from './document-preview/document-preview';
 import { FolderDetails } from './folder-details/folder-details';
 import { PublicShareComponent } from './public-share/public-share';
 import { RecycleBinComponent } from './recycle-bin/recycle-bin';
+import { AudioRecorderComponent } from './audio-recorder/audio-recorder';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -57,5 +58,20 @@ export const routes: Routes = [
   path: 'recycle-bin',
   canActivate: [AuthGuard],
   component: RecycleBinComponent
-}
+},
+{
+    path: 'audio-record',
+    canActivate: [AuthGuard],
+    component: AudioRecorderComponent,
+    children: [
+      {
+        path: ':workspaceId/:folderId',
+        component: AudioRecorderComponent
+      },
+      {
+        path: ':workspaceId',
+        component: AudioRecorderComponent
+      }
+    ]
+  }
 ];

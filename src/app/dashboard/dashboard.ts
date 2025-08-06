@@ -16,12 +16,13 @@ import { AuthService } from '../services/auth';
 import { FormsModule } from '@angular/forms';
 import { SearchService } from '../services/search-service';
 import { DocumentList } from '../document-list/document-list';
+import { AudioTranscriptButtonComponent } from '../audio-transcript-btn/audio-transcript-btn';
 
 // ... all imports remain unchanged ...
 
 @Component({
   selector: 'app-dashboard',
-  imports: [WorkspaceList, CreateWorkspaceModal, DocumentUploadComponent, CommonModule, RouterModule, FormsModule, Header, DocumentList],
+  imports: [WorkspaceList, CreateWorkspaceModal, DocumentUploadComponent, CommonModule, RouterModule, FormsModule, Header, DocumentList,AudioTranscriptButtonComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

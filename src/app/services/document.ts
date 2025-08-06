@@ -184,4 +184,11 @@ export class DocumentService {
   restoreDocument(id: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}/restore`, {});
   }
+
+ summarizeDocument(documentId: string): Observable<string> {
+  return this.http.get(`${this.baseUrl}/${documentId}/summarize`, {
+    responseType: 'text',
+  });
+}
+
 }

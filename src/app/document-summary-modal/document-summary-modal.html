@@ -1,0 +1,94 @@
+<div *ngIf="showModal" class="modal-overlay" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <div class="document-info" *ngIf="document">
+          <div class="file-icon" [class]="getFileIconClass()">
+            <i class="fas" [class]="getFileIcon()"></i>
+          </div>
+          <div class="document-details">
+            <h3 class="modal-title">{{ document.name }}</h3>
+            <p class="modal-subtitle">AI Document Summary</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button *ngIf="summaryText && !loading" class="action-btn copy-btn" (click)="copyToClipboard()" title="Copy to Clipboard">
+          <i class="fas fa-copy"></i>
+        </button>
+        <button *ngIf="summaryText && !loading" class="action-btn download-btn" (click)="downloadSummary()" title="Download Summary">
+          <i class="fas fa-download"></i>
+        </button>
+        <button class="action-btn retry-btn" (click)="retrySummary()" title="Regenerate Summary" *ngIf="!loading">
+          <i class="fas fa-redo"></i>
+        </button>
+        <button class="modal-close-btn" (click)="close()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="summary-state loading-state">
+        <div class="state-content">
+          <div class="loading-animation">
+            <div class="ai-brain-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div class="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <h4 class="state-title">Analyzing Document</h4>
+          <p class="state-description">Our AI is reading and understanding your document...</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="summary-state error-state">
+        <div class="state-content">
+          <div class="state-icon error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h4 class="state-title">Summary Failed</h4>
+          <p class="state-description">{{ error }}</p>
+          <button class="btn btn-primary" (click)="retrySummary()">
+            <i class="fas fa-redo me-2"></i>
+            Try Again
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Content -->
+      <div *ngIf="summaryText && !loading && !error" class="summary-content">
+        <div class="summary-stats">
+          <div class="stat-item">
+            <i class="fas fa-compress-alt"></i>
+            <span>{{ summaryText.split(' ').length }} words</span>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-clock"></i>
+            <span>Generated now</span>
+          </div>
+        </div>
+
+        <div class="summary-text">
+          {{ summaryText }}
+        </div>
+
+        <div class="summary-footer">
+          <div class="ai-disclaimer">
+            <i class="fas fa-info-circle me-2"></i>
+            AI-generated summary may not capture all document nuances.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

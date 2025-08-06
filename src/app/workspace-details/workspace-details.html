@@ -45,6 +45,10 @@
 <button class="btn btn-primary mb-3" (click)="openUploadModal()">
         <i class="fas fa-upload me-2"></i> Upload Document
       </button>
+      <app-audio-transcript-button
+      [workspaceId]="workspaceId"
+      [routerLink]="['/audio-record', workspaceId]"
+      ></app-audio-transcript-button>
       <app-document-list
         [workspaceId]="workspaceId"
         [folderId]="currentFolderId!"

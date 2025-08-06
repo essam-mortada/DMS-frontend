@@ -61,6 +61,17 @@
             <p class="content-subtitle">Get insights into your document management</p>
           </div>
           <div class="action-buttons">
+            <app-audio-transcript-button
+        variant="primary"
+        size="medium"
+        [showIcon]="true"
+        [showText]="true"
+        text="Audio Transcript"
+        routerLink="/audio-record"
+        tooltip="Start audio recording and transcription"
+        [pulse]="false"
+        class="me-2"
+      ></app-audio-transcript-button>
             <button
               class="btn btn-outline-primary me-2"
               (click)="openUploadModal()"
@@ -75,6 +86,7 @@
               <i class="fas fa-plus me-2"></i>
               New Workspace
             </button>
+
           </div>
         </div>
       </div>

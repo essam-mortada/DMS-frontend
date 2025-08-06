@@ -1,0 +1,120 @@
+<app-header></app-header>
+<div class="main-container">
+<div class="audio-recorder-container  mt-5" [ngClass]="getStatusClass()">
+  <!-- Header Section -->
+  <div class="recorder-header">
+    <div class="status-indicator">
+      <i class="fas" [ngClass]="getStatusIcon()"></i>
+      <span class="status-text">{{ getStatusMessage() }}</span>
+    </div>
+    <div class="recording-time" *ngIf="isRecording || recordingTime > 0">
+      {{ formatTime(recordingTime) }}
+    </div>
+  </div>
+
+  <!-- Main Recording Button -->
+  <div class="recording-controls">
+    <button
+      class="record-btn"
+      [class.recording]="isRecording"
+      [class.disabled]="isLoading"
+      (click)="toggleRecording()"
+      [disabled]="isLoading"
+    >
+      <div class="btn-content">
+        <i class="fas" [ngClass]="isRecording ? 'fa-stop' : 'fa-microphone'"></i>
+        <span>{{ isRecording ? 'Stop Recording' : 'Start Recording' }}</span>
+      </div>
+      <div class="pulse-ring" *ngIf="isRecording"></div>
+    </button>
+  </div>
+
+  <!-- Audio Visualizer -->
+  <div class="audio-visualizer" *ngIf="isRecording">
+    <div class="visualizer-container">
+      <div
+        class="visualizer-bar"
+        *ngFor="let bar of visualizerBars; trackBy: trackByIndex"
+        [style.height.px]="bar"
+      ></div>
+    </div>
+    <div class="recording-indicator">
+      <div class="pulse-dot"></div>
+      <span>Recording in progress...</span>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-container" *ngIf="isLoading">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progress"></div>
+    </div>
+    <div class="progress-text">
+      <span>Processing audio... {{ progress }}%</span>
+      <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Playback Controls -->
+  <div class="playback-controls" *ngIf="audioBlob && !isRecording">
+    <div class="audio-info">
+      <div class="audio-details">
+        <i class="fas fa-file-audio"></i>
+        <div class="details-text">
+          <span class="duration">{{ formatTime(audioDuration) }}</span>
+          <span class="size">{{ formatFileSize(audioBlob.size) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-buttons">
+      <button
+        class="control-btn play-btn"
+        (click)="isPlaying ? pauseRecording() : playRecording()"
+        title="{{ isPlaying ? 'Pause' : 'Play' }}"
+      >
+        <i class="fas" [ngClass]="isPlaying ? 'fa-pause' : 'fa-play'"></i>
+      </button>
+
+      <button
+        class="control-btn download-btn"
+        (click)="downloadRecording()"
+        title="Download Recording"
+      >
+        <i class="fas fa-download"></i>
+      </button>
+
+      <button
+        class="control-btn delete-btn"
+        (click)="deleteRecording()"
+        title="Delete Recording"
+      >
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-container" *ngIf="error">
+    <div class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+      <button class="error-close" (click)="clearError()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-container" *ngIf="audioBlob && !error && !isLoading">
+    <div class="success-message">
+      <i class="fas fa-check-circle"></i>
+      <span>Recording completed successfully!</span>
+    </div>
+  </div>
+</div>
+</div>

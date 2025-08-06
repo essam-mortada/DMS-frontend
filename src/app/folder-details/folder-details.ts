@@ -13,6 +13,7 @@ import { DocumentList } from '../document-list/document-list';
 import { Header } from "../header/header";
 import { DocumentService } from '../services/document';
 import { SearchService } from '../services/search-service';
+import { AudioTranscriptButtonComponent } from '../audio-transcript-btn/audio-transcript-btn';
 type DocumentUploadEvent = {
   status: 'success' | 'error';
   document?: Document;
@@ -30,7 +31,8 @@ type DocumentEvent = Document | { id: string | undefined };
     RouterModule,
     DocumentUploadComponent,
     DocumentList,
-    Header
+    Header,
+    AudioTranscriptButtonComponent
 ],
   templateUrl: './folder-details.html',
   styleUrls: ['./folder-details.css'],

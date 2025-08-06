@@ -18,9 +18,10 @@ import { FormsModule } from '@angular/forms';
 import { ShareModal } from '../share-modal/share-modal';
 import { SharingService } from '../services/sharing';
 import { SharePermission } from '../models/share-permission.model';
+import { DocumentSummaryModalComponent } from '../document-summary-modal/document-summary-modal';
 @Component({
   selector: 'app-document-list',
-  imports: [CommonModule, RouterModule, FormsModule, ShareModal],
+  imports: [CommonModule, RouterModule, FormsModule, ShareModal, DocumentSummaryModalComponent],
   templateUrl: './document-list.html',
   styleUrl: './document-list.css',
 })
@@ -35,6 +36,9 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   selectedSort: string = 'name';
   showSortDropdown = false;
 
+ selectedDocumentForSummary: any = null
+  showSummaryModal = false
+
   showFilters = false
   selectedFileTypes: string[] = []
   selectedDateRange = ""
@@ -44,6 +48,7 @@ export class DocumentList implements OnInit, OnChanges, OnDestroy {
   currentShareLink = '';
   selectedDocument: Document | null = null;
   private destroy$ = new Subject<void>();
+  error: string = '';
 
   constructor(
     private snackBar: MatSnackBar,
@@ -238,7 +243,14 @@ getFileSize(document: any): string {
   else return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-
+isSummarizable(type: string): boolean {
+  const summarizableTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
+  return summarizableTypes.includes(type);
+}
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -289,5 +301,15 @@ getFileSize(document: any): string {
         this.snackBar.open('Failed to delete share link', 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
       }
     });
+  }
+
+ onSummarize(document: any): void {
+    this.selectedDocumentForSummary = document
+    this.showSummaryModal = true
+  }
+
+closeSummaryModal(): void {
+    this.showSummaryModal = false
+    this.selectedDocumentForSummary = null
   }
 }
